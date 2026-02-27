@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Chamomile::KeyMap do
   describe ".translate" do
     it "translates arrow keys" do

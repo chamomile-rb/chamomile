@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe Chamomile::Model do
   let(:bare_class) do
     Class.new do
@@ -9,7 +11,7 @@ RSpec.describe Chamomile::Model do
     Class.new do
       include Chamomile::Model
 
-      def update(msg)
+      def update(_msg)
         [self, nil]
       end
 

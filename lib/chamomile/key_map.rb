@@ -1,20 +1,23 @@
+# frozen_string_literal: true
+
 module Chamomile
+  # Backward-compat sequence-to-KeyMsg translator (delegates to EscapeParser).
   module KeyMap
     SEQUENCES = {
-      "\e[A"   => [:up,        []],
-      "\e[B"   => [:down,      []],
-      "\e[C"   => [:right,     []],
-      "\e[D"   => [:left,      []],
-      "\e[H"   => [:home,      []],
-      "\e[F"   => [:end_key,   []],
-      "\e[5~"  => [:page_up,   []],
-      "\e[6~"  => [:page_down, []],
-      "\e[2~"  => [:insert,    []],
-      "\e[3~"  => [:delete,    []],
-      "\eOP"   => [:f1,        []],
-      "\eOQ"   => [:f2,        []],
-      "\eOR"   => [:f3,        []],
-      "\eOS"   => [:f4,        []],
+      "\e[A" => [:up,        []],
+      "\e[B" => [:down,      []],
+      "\e[C" => [:right,     []],
+      "\e[D" => [:left,      []],
+      "\e[H" => [:home,      []],
+      "\e[F" => [:end_key,   []],
+      "\e[5~" => [:page_up,   []],
+      "\e[6~" => [:page_down, []],
+      "\e[2~" => [:insert,    []],
+      "\e[3~" => [:delete,    []],
+      "\eOP" => [:f1,        []],
+      "\eOQ" => [:f2,        []],
+      "\eOR" => [:f3,        []],
+      "\eOS" => [:f4,        []],
       "\e[15~" => [:f5,        []],
       "\e[17~" => [:f6,        []],
       "\e[18~" => [:f7,        []],
@@ -37,7 +40,7 @@ module Chamomile
       "\x0a" => [:enter,     []],
       "\x0b" => ["k", [:ctrl]],
       "\x0c" => ["l", [:ctrl]],
-      "\x0d" => [:enter,     []],
+      "\x0d" => [:enter, []],
       "\x0e" => ["n", [:ctrl]],
       "\x0f" => ["o", [:ctrl]],
       "\x10" => ["p", [:ctrl]],
@@ -55,15 +58,19 @@ module Chamomile
       "\x7f" => [:backspace, []],
     }.freeze
 
+    # Backward-compat wrapper: translates a complete byte sequence into a message.
+    # New code should use EscapeParser directly for streaming/buffered parsing.
     def self.translate(bytes)
-      if (mapped = SEQUENCES[bytes])
-        key, mod = mapped
-        KeyMsg.new(key: key, mod: mod)
-      elsif bytes.length == 1
-        KeyMsg.new(key: bytes, mod: [])
-      else
-        KeyMsg.new(key: bytes, mod: [:unknown])
-      end
+      # For bare ESC, use the static map (parser would need a timeout to flush it)
+      return KeyMsg.new(key: :escape, mod: []) if bytes == "\x1b"
+
+      # Use parser for everything else
+      msgs = []
+      parser = EscapeParser.new
+      parser.feed(bytes) { |msg| msgs << msg }
+      parser.timeout! { |msg| msgs << msg }
+
+      msgs.first || KeyMsg.new(key: bytes, mod: [:unknown])
     end
   end
 end

@@ -1,14 +1,21 @@
+# frozen_string_literal: true
+
 require "io/console"
 
 module Chamomile
+  # Background thread that reads stdin and feeds bytes through EscapeParser.
   class InputReader
-    def initialize(queue)
+    def initialize(queue, input: $stdin)
       @queue   = queue
+      @input   = input
       @thread  = nil
       @running = false
+      @parser  = EscapeParser.new
     end
 
     def start
+      return @thread if @running
+
       @running = true
       @thread = Thread.new { read_loop }
       @thread.abort_on_exception = false
@@ -17,8 +24,14 @@ module Chamomile
 
     def stop
       @running = false
-      @thread&.kill
+      return unless @thread
+
+      @thread.kill
       @thread = nil
+    end
+
+    def running?
+      @running
     end
 
     private
@@ -26,17 +39,21 @@ module Chamomile
     def read_loop
       while @running
         begin
-          bytes = $stdin.read_nonblock(32)
-          next if bytes.nil? || bytes.empty?
-          msg = KeyMap.translate(bytes)
-          @queue.push(msg)
+          if @input.wait_readable(0.05)
+            bytes = @input.read_nonblock(256)
+            next if bytes.nil? || bytes.empty?
+
+            @parser.feed(bytes) { |msg| @queue.push(msg) }
+          else
+            @parser.timeout! { |msg| @queue.push(msg) }
+          end
         rescue IO::WaitReadable
-          IO.select([$stdin], nil, nil, 0.05)
+          # Transient — retry on next iteration
         rescue EOFError, Errno::EIO
           @queue.push(QuitMsg.new)
           break
-        rescue
-          # Swallow other errors in the read loop
+        rescue StandardError => e
+          Chamomile.log("InputReader error: #{e.class}: #{e.message}", level: :warn)
         end
       end
     end

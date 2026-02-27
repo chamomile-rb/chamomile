@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "lib/chamomile/version"
 
 Gem::Specification.new do |spec|
@@ -11,7 +13,6 @@ Gem::Specification.new do |spec|
   spec.files         = Dir["lib/**/*.rb"]
   spec.required_ruby_version = ">= 3.2.0"
 
-  spec.add_dependency "tty-reader", "~> 0.9"
-
   spec.add_development_dependency "rspec", "~> 3.12"
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

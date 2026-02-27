@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "chamomile"
 
 RSpec.configure do |config|

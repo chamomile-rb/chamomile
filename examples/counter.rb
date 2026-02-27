@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative "../lib/chamomile"
 
 class Counter
@@ -19,7 +21,7 @@ class Counter
       case msg.key
       when :up,   "k" then @count += 1
       when :down, "j" then @count -= 1
-      when "r"         then @count  = 0
+      when "r"         then @count = 0
       when "q"         then return [self, quit]
       end
       return [self, nil]

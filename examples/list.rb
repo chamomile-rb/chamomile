@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require_relative "../lib/chamomile"
 
 class ItemList
   include Chamomile::Model
   include Chamomile::Commands
 
-  ITEMS = ["Apples", "Bananas", "Cherries", "Dates", "Elderberries"]
+  ITEMS = %w[Apples Bananas Cherries Dates Elderberries].freeze
 
   def initialize
     @cursor   = 0
@@ -33,7 +35,7 @@ class ItemList
     lines = ["Pick some items:\n\n"]
     ITEMS.each_with_index do |item, i|
       cursor  = @cursor == i ? ">" : " "
-      checked = @selected[i]  ? "x" : " "
+      checked = @selected[i] ? "x" : " "
       lines << "#{cursor} [#{checked}] #{item}"
     end
     lines << "\n\nSpace/Enter to select, q to quit"
