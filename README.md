@@ -122,7 +122,7 @@ ruby examples/inline.rb      # non-fullscreen inline mode
 | Gem | Description |
 |-----|-------------|
 | **chamomile** | Core framework (this gem) |
-| **[chamomile-leaves](https://github.com/chamomile-leaves)** | Reusable components (Spinner, TextInput, Timer, etc.) |
+| **[petals](https://github.com/xjackk/petals)** | Reusable components (Spinner, TextInput, Timer, etc.) |
 | **chamomile-lipstick** | ANSI styling — colors, borders, padding (planned) |
 
 ## Development
