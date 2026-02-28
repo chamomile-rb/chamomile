@@ -50,24 +50,24 @@ class StressTest
     when Chamomile::FocusMsg
       @focus = true
       log_event("Focus gained")
-      [self, nil]
+      nil
     when Chamomile::BlurMsg
       @focus = false
       log_event("Focus lost")
-      [self, nil]
+      nil
     when Chamomile::WindowSizeMsg
       @width = msg.width
       @height = msg.height
       log_event("Resize: #{msg.width}x#{msg.height}")
-      [self, nil]
+      nil
     when Chamomile::TickMsg
       handle_tick(msg)
     when Chamomile::InterruptMsg
       log_event("InterruptMsg received — quitting")
-      [self, quit]
+      quit
     else
       log_event("Unknown: #{msg.class.name}")
-      [self, nil]
+      nil
     end
   end
 
@@ -126,14 +126,14 @@ class StressTest
     when :tab
       @tab = (@tab + 1) % SECTIONS.length
     when "q"
-      return [self, quit] unless msg.ctrl?
+      return quit unless msg.ctrl?
 
       @key_log << format_key(msg)
     else
       @key_log << format_key(msg)
     end
     @key_log.shift while @key_log.length > 50
-    [self, nil]
+    nil
   end
 
   def handle_mouse(msg)
@@ -141,7 +141,7 @@ class StressTest
     entry += " [#{msg.mod.join(",")}]" unless msg.mod.empty?
     @mouse_log << entry
     @mouse_log.shift while @mouse_log.length > 50
-    [self, nil]
+    nil
   end
 
   def handle_paste(msg)
@@ -149,7 +149,7 @@ class StressTest
     preview = msg.content.gsub("\n", "\\n").gsub("\t", "\\t")
     @last_paste_preview = preview.length > 60 ? "#{preview[0..57]}..." : preview
     log_event("Paste: #{msg.content.length} chars")
-    [self, nil]
+    nil
   end
 
   def handle_tick(msg)
@@ -163,7 +163,7 @@ class StressTest
     end
     @last_tick_time = now
 
-    [self, tick(0.1)]
+    tick(0.1)
   end
 
   def log_event(str)

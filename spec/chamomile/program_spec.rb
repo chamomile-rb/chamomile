@@ -22,7 +22,7 @@ RSpec.describe Chamomile::Program do
 
       def update(msg)
         @messages_received << msg
-        [self, nil]
+        nil
       end
 
       def view
@@ -48,9 +48,9 @@ RSpec.describe Chamomile::Program do
           # ignore
         else
           @count += 1
-          return [self, quit] if @count >= 2
+          return quit if @count >= 2
         end
-        [self, nil]
+        nil
       end
 
       def view
@@ -131,7 +131,7 @@ RSpec.describe Chamomile::Program do
           when Chamomile::InterruptMsg
             raise NotImplementedError
           end
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -165,7 +165,7 @@ RSpec.describe Chamomile::Program do
 
         def update(msg)
           received << msg
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -194,7 +194,7 @@ RSpec.describe Chamomile::Program do
         def update(msg)
           raise "boom!" unless msg.is_a?(Chamomile::WindowSizeMsg)
 
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -234,9 +234,9 @@ RSpec.describe Chamomile::Program do
           case msg
           when Chamomile::TickMsg
             results << msg
-            return [self, quit] if results.length >= 2
+            return quit if results.length >= 2
           end
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -274,9 +274,9 @@ RSpec.describe Chamomile::Program do
         def update(msg)
           case msg
           when Chamomile::TickMsg
-            return [self, quit] if order.length >= 2
+            return quit if order.length >= 2
           end
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -307,7 +307,7 @@ RSpec.describe Chamomile::Program do
           when Chamomile::WindowSizeMsg
             self.received_window_msg = msg
           end
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -333,7 +333,7 @@ RSpec.describe Chamomile::Program do
         end
 
         def update(_msg)
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -353,7 +353,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
 
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = ""
       end.new
 
@@ -368,7 +368,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
 
         def init = quit
-        def update(_msg) = [nil, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -384,7 +384,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
 
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -403,7 +403,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
 
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = nil
       end.new
 
@@ -418,7 +418,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
 
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -436,7 +436,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = ""
       end.new
 
@@ -461,7 +461,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = ""
       end.new
 
@@ -477,7 +477,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -501,9 +501,9 @@ RSpec.describe Chamomile::Program do
 
         def update(msg)
           received << msg
-          return [self, quit] if received.length >= 2
+          return quit if received.length >= 2
 
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -532,7 +532,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
 
         def update(_msg)
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -560,7 +560,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -582,7 +582,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -605,7 +605,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -633,7 +633,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
         def init = quit
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = "test"
       end.new
 
@@ -659,7 +659,7 @@ RSpec.describe Chamomile::Program do
           when Chamomile::WindowSizeMsg
             self.received_size = msg
           end
-          [self, nil]
+          nil
         end
 
         def view = "test"
@@ -680,7 +680,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = ""
       end.new
 
@@ -702,7 +702,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = ""
       end.new
 
@@ -731,9 +731,9 @@ RSpec.describe Chamomile::Program do
           case msg
           when Chamomile::WindowSizeMsg
             sizes_received << msg
-            return [self, quit] if sizes_received.length >= 2
+            return quit if sizes_received.length >= 2
           end
-          [self, nil]
+          nil
         end
 
         def view = ""
@@ -756,7 +756,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def update(_msg) = [self, nil]
+        def update(_msg) = nil
         def view = ""
       end.new
 
@@ -788,9 +788,9 @@ RSpec.describe Chamomile::Program do
           case msg
           when Chamomile::TickMsg
             self.callback_called = true
-            return [self, quit]
+            return quit
           end
-          [self, nil]
+          nil
         end
 
         def view = ""

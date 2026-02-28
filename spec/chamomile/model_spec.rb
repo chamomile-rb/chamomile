@@ -12,7 +12,7 @@ RSpec.describe Chamomile::Model do
       include Chamomile::Model
 
       def update(_msg)
-        [self, nil]
+        nil
       end
 
       def view
@@ -35,7 +35,7 @@ RSpec.describe Chamomile::Model do
     it "works when implemented" do
       model = complete_class.new
       result = model.update(:any)
-      expect(result).to eq([model, nil])
+      expect(result).to be_nil
     end
   end
 

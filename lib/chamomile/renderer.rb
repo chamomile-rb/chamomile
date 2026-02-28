@@ -171,7 +171,7 @@ module Chamomile
         new_line = new_lines[i] || ""
         old_line = @prev_lines[i] || ""
 
-        next unless new_line != old_line
+        next if new_line == old_line
 
         buf << "\e[#{i + 1};1H"  # Move to row
         buf << "\e[K"            # Clear line
@@ -241,7 +241,7 @@ module Chamomile
     def cancel_timer
       return unless @timer_thread
 
-      @timer_thread.kill
+      @timer_thread.kill if @timer_thread.alive?
       @timer_thread = nil
     end
   end

@@ -35,6 +35,9 @@ module Chamomile
       @done_mutex   = Mutex.new
       @done_cv      = ConditionVariable.new
       @done         = false
+      @stty_state   = nil
+
+      at_exit { system("stty #{@stty_state}") if @stty_state }
     end
 
     def run
@@ -134,11 +137,11 @@ module Chamomile
           break
         when InterruptMsg
           begin
-            next_model, cmd = @model.update(msg)
-            @model = next_model if next_model
+            cmd = @model.update(msg)
             run_cmd(cmd) if cmd
             @renderer.render(@model.view)
           rescue NotImplementedError
+            # Model doesn't implement update — default to quitting on Ctrl-C
             @running = false
             break
           end
@@ -190,32 +193,25 @@ module Chamomile
           @renderer.render(@model.view)
           next
         when EnableMouseCellMotionMsg
-          @output.write("\e[?1002h\e[?1006h")
-          @output.flush
+          write_escape("\e[?1002h\e[?1006h")
           next
         when EnableMouseAllMotionMsg
-          @output.write("\e[?1003h\e[?1006h")
-          @output.flush
+          write_escape("\e[?1003h\e[?1006h")
           next
         when DisableMouseMsg
-          @output.write("\e[?1002l\e[?1003l\e[?1006l")
-          @output.flush
+          write_escape("\e[?1002l\e[?1003l\e[?1006l")
           next
         when EnableBracketedPasteMsg
-          @output.write("\e[?2004h")
-          @output.flush
+          write_escape("\e[?2004h")
           next
         when DisableBracketedPasteMsg
-          @output.write("\e[?2004l")
-          @output.flush
+          write_escape("\e[?2004l")
           next
         when EnableReportFocusMsg
-          @output.write("\e[?1004h")
-          @output.flush
+          write_escape("\e[?1004h")
           next
         when DisableReportFocusMsg
-          @output.write("\e[?1004l")
-          @output.flush
+          write_escape("\e[?1004l")
           next
         when ClearScreenMsg
           @renderer.clear
@@ -226,8 +222,7 @@ module Chamomile
           next
         end
 
-        next_model, cmd = @model.update(msg)
-        @model = next_model if next_model
+        cmd = @model.update(msg)
 
         run_cmd(cmd) if cmd
 
@@ -236,13 +231,7 @@ module Chamomile
     end
 
     def handle_suspend
-      begin
-        next_model, cmd = @model.update(SuspendMsg.new)
-        @model = next_model if next_model
-        run_cmd(cmd) if cmd
-      rescue NotImplementedError
-        # Model doesn't handle SuspendMsg, that's fine
-      end
+      deliver_to_model(SuspendMsg.new)
 
       teardown_terminal
       Process.kill("SIGSTOP", Process.pid)
@@ -251,13 +240,7 @@ module Chamomile
       setup_terminal
       send_msg(build_window_size_msg)
 
-      begin
-        next_model, cmd = @model.update(ResumeMsg.new)
-        @model = next_model if next_model
-        run_cmd(cmd) if cmd
-      rescue NotImplementedError
-        # Model doesn't handle ResumeMsg, that's fine
-      end
+      deliver_to_model(ResumeMsg.new)
 
       @renderer.render(@model.view)
     end
@@ -313,21 +296,13 @@ module Chamomile
 
     def setup_terminal
       @torn_down = false
-      @old_tty_state = begin
+      @stty_state = begin
         `stty -g`.chomp
       rescue StandardError
         nil
       end
       begin
         system("stty raw -echo -isig")
-      rescue StandardError
-        nil
-      end
-
-      # Safety net: restore terminal on hard crash
-      saved_state = @old_tty_state
-      begin
-        at_exit { system("stty #{saved_state}") if saved_state }
       rescue StandardError
         nil
       end
@@ -342,12 +317,8 @@ module Chamomile
 
       # Enable mouse mode
       case @options.mouse
-      when :cell_motion
-        @output.write("\e[?1002h")
-        @output.write("\e[?1006h")
-      when :all_motion
-        @output.write("\e[?1003h")
-        @output.write("\e[?1006h")
+      when :cell_motion then @output.write("\e[?1002h\e[?1006h")
+      when :all_motion  then @output.write("\e[?1003h\e[?1006h")
       end
 
       # Enable bracketed paste
@@ -360,15 +331,9 @@ module Chamomile
 
       # Signal handling
       if @options.handle_signals
-        Signal.trap("SIGWINCH") do
-          @msgs.push(build_window_size_msg)
-        end
-        Signal.trap("SIGINT") do
-          @msgs.push(InterruptMsg.new)
-        end
-        Signal.trap("SIGTERM") do
-          @msgs.push(QuitMsg.new)
-        end
+        Signal.trap("SIGWINCH") { @msgs.push(build_window_size_msg) }
+        Signal.trap("SIGINT") { @msgs.push(InterruptMsg.new) }
+        Signal.trap("SIGTERM") { @msgs.push(QuitMsg.new) }
         begin
           Signal.trap("SIGTSTP") do
             @msgs.push(SuspendMsg.new)
@@ -409,35 +374,28 @@ module Chamomile
       rescue StandardError
         nil
       end
-      system("stty #{@old_tty_state}") if @old_tty_state
+      if @stty_state
+        system("stty #{@stty_state}")
+        @stty_state = nil
+      end
 
       return unless @options.handle_signals
 
-      begin
-        Signal.trap("SIGWINCH", "DEFAULT")
-      rescue StandardError
-        nil
+      %w[SIGWINCH SIGINT SIGTERM SIGTSTP SIGCONT].each do |sig|
+        Signal.trap(sig, "DEFAULT")
+      rescue ArgumentError
+        # Signal unsupported on this platform
       end
-      begin
-        Signal.trap("SIGINT", "DEFAULT")
-      rescue StandardError
-        nil
-      end
-      begin
-        Signal.trap("SIGTERM", "DEFAULT")
-      rescue StandardError
-        nil
-      end
-      begin
-        Signal.trap("SIGTSTP", "DEFAULT")
-      rescue StandardError
-        nil
-      end
-      begin
-        Signal.trap("SIGCONT", "DEFAULT")
-      rescue StandardError
-        nil
-      end
+    end
+
+    def write_escape(seq)
+      @output.write(seq)
+      @output.flush
+    end
+
+    def deliver_to_model(msg)
+      cmd = @model.update(msg)
+      run_cmd(cmd) if cmd
     end
 
     def build_window_size_msg
@@ -474,14 +432,14 @@ module Chamomile
       @height = h
     end
 
-    def render(view_string); end
-    def force_render(view_string); end
+    def render(_view_string); end
+    def force_render(_view_string); end
     def clear; end
-    def println(str); end
-    def println_above(str); end
-    def move_cursor(row, col); end
-    def apply_cursor_shape(shape); end
-    def write_window_title(title); end
+    def println(_str); end
+    def println_above(_str); end
+    def move_cursor(_row, _col); end
+    def apply_cursor_shape(_shape); end
+    def write_window_title(_title); end
     def stop; end
   end
 end

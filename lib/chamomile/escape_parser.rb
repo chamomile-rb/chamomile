@@ -276,20 +276,10 @@ module Chamomile
         button = base.zero? ? MOUSE_WHEEL_UP : MOUSE_WHEEL_DOWN
         action = MOUSE_PRESS
       elsif motion
-        button = case base
-                 when 0 then MOUSE_LEFT
-                 when 1 then MOUSE_MIDDLE
-                 when 2 then MOUSE_RIGHT
-                 else MOUSE_NONE
-                 end
+        button = resolve_button(base)
         action = MOUSE_MOTION
       else
-        button = case base
-                 when 0 then MOUSE_LEFT
-                 when 1 then MOUSE_MIDDLE
-                 when 2 then MOUSE_RIGHT
-                 else MOUSE_NONE
-                 end
+        button = resolve_button(base)
         action = pressed ? MOUSE_PRESS : MOUSE_RELEASE
       end
 
@@ -311,6 +301,15 @@ module Chamomile
         @paste_buf.clear
         @state = GROUND
         yield PasteMsg.new(content: content)
+      end
+    end
+
+    def resolve_button(base)
+      case base
+      when 0 then MOUSE_LEFT
+      when 1 then MOUSE_MIDDLE
+      when 2 then MOUSE_RIGHT
+      else MOUSE_NONE
       end
     end
 

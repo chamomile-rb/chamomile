@@ -17,7 +17,7 @@ class MouseTracker
   def update(msg)
     case msg
     when Chamomile::KeyMsg
-      return [self, quit] if msg.key == "q" || msg.ctrl?
+      return quit if msg.key == "q" || msg.ctrl?
     when Chamomile::MouseMsg
       @x = msg.x
       @y = msg.y
@@ -25,7 +25,7 @@ class MouseTracker
       @action = msg.action.to_s
       @events += 1
     end
-    [self, nil]
+    nil
   end
 
   def view

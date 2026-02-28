@@ -40,10 +40,10 @@ class Counter
       case msg.key
       when :up,   "k" then @count += 1
       when :down, "j" then @count -= 1
-      when "q"         then return [self, quit]
+      when "q"         then return quit
       end
     end
-    [self, nil]
+    nil
   end
 
   def view
@@ -58,7 +58,7 @@ Chamomile.run(Counter.new)
 
 1. **Model** — your class includes `Chamomile::Model` and holds application state
 2. **`init`** — returns an optional command to run at startup (timers, data loading, etc.)
-3. **`update(msg)`** — receives messages (key presses, mouse events, ticks), returns `[model, cmd]`
+3. **`update(msg)`** — receives messages (key presses, mouse events, ticks), returns a command or nil
 4. **`view`** — returns a string to render to the terminal
 5. **Commands** — lambdas that run in threads and return messages back to the event loop
 

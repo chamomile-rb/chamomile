@@ -25,10 +25,10 @@ class ItemList
         else
           @selected[@cursor] = true
         end
-      when "q" then return [self, quit]
+      when "q" then return quit
       end
     end
-    [self, nil]
+    nil
   end
 
   def view

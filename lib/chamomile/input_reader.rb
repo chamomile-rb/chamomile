@@ -26,7 +26,7 @@ module Chamomile
       @running = false
       return unless @thread
 
-      @thread.kill
+      @thread.join(1)
       @thread = nil
     end
 

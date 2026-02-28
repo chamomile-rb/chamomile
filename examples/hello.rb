@@ -9,9 +9,9 @@ class Hello
   def update(msg)
     case msg
     when Chamomile::KeyMsg
-      return [self, quit] if msg.key == "q" || msg.ctrl?
+      return quit if msg.key == "q" || msg.ctrl?
     end
-    [self, nil]
+    nil
   end
 
   def view

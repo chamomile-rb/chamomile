@@ -36,11 +36,11 @@ module Chamomile
                  initial_width: nil,
                  initial_height: nil, **overrides)
 
-      opts.validate!
+      opts.validate
       opts
     end
 
-    def validate!
+    def validate
       unless VALID_MOUSE_MODES.include?(mouse)
         raise ArgumentError, "invalid mouse mode: #{mouse.inspect} (valid: #{VALID_MOUSE_MODES.join(", ")})"
       end
@@ -49,9 +49,7 @@ module Chamomile
         raise ArgumentError, "fps must be a non-negative number, got: #{fps.inspect}"
       end
 
-      return unless filter && !filter.respond_to?(:call)
-
-      raise ArgumentError, "filter must respond to #call, got: #{filter.class}"
+      raise ArgumentError, "filter must respond to #call, got: #{filter.class}" if filter && !filter.respond_to?(:call)
     end
   end
 end

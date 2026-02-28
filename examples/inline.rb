@@ -20,15 +20,15 @@ class InlineSpinner
   def update(msg)
     case msg
     when Chamomile::KeyMsg
-      return [self, quit] if msg.key == "q" || msg.ctrl?
+      return quit if msg.key == "q" || msg.ctrl?
     when Chamomile::TickMsg
       @frame = (@frame + 1) % FRAMES.length
       @progress = [@progress + 1, 100].min
-      return [self, quit] if @progress >= 100
+      return quit if @progress >= 100
 
-      return [self, tick(0.1)]
+      return tick(0.1)
     end
-    [self, nil]
+    nil
   end
 
   def view

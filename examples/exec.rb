@@ -17,15 +17,15 @@ class EditorLauncher
   def update(msg)
     case msg
     when Chamomile::KeyMsg
-      return [self, quit] if msg.key == "q"
+      return quit if msg.key == "q"
 
-      if msg.key == "e" && !@launched
+      if msg.key == "e"
         @launched = true
         editor = ENV["EDITOR"] || "vi"
-        return [self, exec(editor, @file.path)]
+        return exec(editor, @file.path)
       end
     end
-    [self, nil]
+    nil
   end
 
   def view
@@ -36,7 +36,6 @@ class EditorLauncher
     if @launched
       lines << "Editor was launched for: #{@file.path}"
       lines << "Press e to edit again, q to quit."
-      @launched = false
     else
       lines << "Press e to launch $EDITOR"
       lines << "Press q to quit."

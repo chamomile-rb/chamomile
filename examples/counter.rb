@@ -22,16 +22,16 @@ class Counter
       when :up,   "k" then @count += 1
       when :down, "j" then @count -= 1
       when "r"         then @count = 0
-      when "q"         then return [self, quit]
+      when "q"         then return quit
       end
-      return [self, nil]
+      return nil
 
     when Chamomile::TickMsg
       @seconds += 1
-      return [self, tick(1.0)]
+      return tick(1.0)
     end
 
-    [self, nil]
+    nil
   end
 
   def view

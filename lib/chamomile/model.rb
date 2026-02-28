@@ -9,7 +9,7 @@ module Chamomile
 
     def update(msg)
       raise NotImplementedError,
-            "#{self.class} must implement #update(msg) returning [model, cmd]"
+            "#{self.class} must implement #update(msg) returning a command or nil"
     end
 
     def view
