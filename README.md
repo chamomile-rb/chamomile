@@ -122,14 +122,14 @@ ruby examples/inline.rb      # non-fullscreen inline mode
 | Gem | Description |
 |-----|-------------|
 | **chamomile** | Core framework (this gem) |
-| **[petals](https://github.com/xjackk/petals)** | Reusable components (Spinner, TextInput, Timer, etc.) |
-| **chamomile-lipstick** | ANSI styling — colors, borders, padding (planned) |
+| **[petals](https://github.com/chamomile-rb/petals)** | Reusable TUI components — Spinner, TextInput, Timer, Viewport, Table, List, and more |
+| **[flourish](https://github.com/chamomile-rb/flourish)** | Terminal styling — colors, borders, padding, layout composition |
 
 ## Development
 
 ```sh
 bundle install
-bundle exec rspec        # run tests (269 specs)
+bundle exec rspec        # run tests
 bundle exec rubocop      # lint
 ```
 
