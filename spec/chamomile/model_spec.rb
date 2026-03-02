@@ -21,9 +21,9 @@ RSpec.describe Chamomile::Model do
     end
   end
 
-  describe "#init" do
+  describe "#start" do
     it "returns nil by default" do
-      expect(bare_class.new.init).to be_nil
+      expect(bare_class.new.start).to be_nil
     end
   end
 

@@ -16,7 +16,7 @@ RSpec.describe Chamomile::Program do
         @messages_received = []
       end
 
-      def init
+      def start
         quit
       end
 
@@ -159,7 +159,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Commands
         define_method(:received) { received }
 
-        def init
+        def start
           quit
         end
 
@@ -223,7 +223,7 @@ RSpec.describe Chamomile::Program do
 
         define_method(:results) { results }
 
-        def init
+        def start
           batch(
             -> { Chamomile::TickMsg.new(time: Time.now) },
             -> { Chamomile::TickMsg.new(time: Time.now) }
@@ -258,7 +258,7 @@ RSpec.describe Chamomile::Program do
 
         define_method(:order) { order }
 
-        def init
+        def start
           sequence(
             -> {
               order << 1
@@ -298,7 +298,7 @@ RSpec.describe Chamomile::Program do
 
         define_method(:received_window_msg=) { |v| received_window_msg = v }
 
-        def init
+        def start
           quit
         end
 
@@ -328,7 +328,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
 
-        def init
+        def start
           -> { raise "test error" }
         end
 
@@ -352,7 +352,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
 
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = ""
       end.new
@@ -367,7 +367,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
 
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -383,7 +383,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
 
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -402,7 +402,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
 
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = nil
       end.new
@@ -417,7 +417,7 @@ RSpec.describe Chamomile::Program do
         include Chamomile::Model
         include Chamomile::Commands
 
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -435,7 +435,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = ""
       end.new
@@ -460,7 +460,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = ""
       end.new
@@ -476,7 +476,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -604,7 +604,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -632,7 +632,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def init = quit
+        def start = quit
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -652,7 +652,7 @@ RSpec.describe Chamomile::Program do
 
         define_method(:received_size=) { |v| received_size = v }
 
-        def init = quit
+        def start = quit
 
         def update(msg)
           case msg

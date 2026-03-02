@@ -11,7 +11,7 @@ class Counter
     @seconds = 0
   end
 
-  def init
+  def start
     tick(1.0)
   end
 

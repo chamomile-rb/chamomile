@@ -108,8 +108,8 @@ module Chamomile
 
       send_msg(build_window_size_msg)
 
-      if (init_cmd = @model.init)
-        run_cmd(init_cmd)
+      if (start_cmd = @model.start)
+        run_cmd(start_cmd)
       end
 
       @renderer.render(@model.view)

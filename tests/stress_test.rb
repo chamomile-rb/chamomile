@@ -33,7 +33,7 @@ class StressTest
     @error_msg = nil
   end
 
-  def init
+  def start
     tick(0.1)
   end
 

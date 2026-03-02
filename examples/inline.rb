@@ -13,7 +13,7 @@ class InlineSpinner
     @progress = 0
   end
 
-  def init
+  def start
     tick(0.1)
   end
 

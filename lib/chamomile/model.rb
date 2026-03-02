@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Chamomile
-  # Elm Architecture contract: init, update(msg), view.
+  # Elm Architecture contract: start, update(msg), view.
   module Model
-    def init
+    def start
       nil
     end
 
