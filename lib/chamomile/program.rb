@@ -5,20 +5,12 @@ require "io/console"
 module Chamomile
   # Main event loop — wires up Model, Renderer, and InputReader.
   class Program
-    def initialize(model, output: nil, input: nil, options: nil, **opts)
-      # Build options: explicit options struct takes priority, then kwargs merge into defaults
-      if options
-        @options = options
-      else
-        overrides = {}
-        overrides[:output] = output if output
-        overrides[:input] = input if input
-        overrides.merge!(opts.slice(:alt_screen, :mouse, :report_focus, :bracketed_paste,
-                                    :fps, :filter, :catch_panics, :handle_signals,
-                                    :input_tty, :without_renderer,
-                                    :initial_width, :initial_height))
-        @options = Options.default(**overrides)
-      end
+    def initialize(model, options: nil, **kwargs)
+      @options = if options
+                   options
+                 else
+                   Options.default(**kwargs.compact)
+                 end
 
       @model        = model
       @output       = @options.output
@@ -36,8 +28,6 @@ module Chamomile
       @done_cv      = ConditionVariable.new
       @done         = false
       @stty_state   = nil
-
-      at_exit { system("stty #{@stty_state}") if @stty_state }
     end
 
     def run
