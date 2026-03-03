@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 module Chamomile
-  BatchCmd    = Data.define(:cmds)
-  SequenceCmd = Data.define(:cmds)
-
   # Internal command types intercepted by Program (not delivered to model)
   WindowTitleCmd       = Data.define(:title)
   CursorPositionCmd    = Data.define(:row, :col)
@@ -39,14 +36,14 @@ module Chamomile
       valid = cmds.flatten.compact
       return nil if valid.empty?
 
-      -> { BatchCmd.new(cmds: valid) }
+      -> { valid }
     end
 
     def sequence(*cmds)
       valid = cmds.flatten.compact
       return nil if valid.empty?
 
-      -> { SequenceCmd.new(cmds: valid) }
+      -> { [:sequence, *valid] }
     end
 
     def tick(duration, &block)

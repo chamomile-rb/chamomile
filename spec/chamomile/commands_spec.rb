@@ -18,13 +18,13 @@ RSpec.describe Chamomile::Commands do
   end
 
   describe "#batch" do
-    it "returns a lambda that produces BatchCmd" do
+    it "returns a lambda that produces an Array of commands" do
       c1 = -> { :a }
       c2 = -> { :b }
       cmd = batch(c1, c2)
       result = cmd.call
-      expect(result).to be_a(Chamomile::BatchCmd)
-      expect(result.cmds).to eq([c1, c2])
+      expect(result).to be_an(Array)
+      expect(result).to eq([c1, c2])
     end
 
     it "returns nil for empty batch" do
@@ -36,18 +36,19 @@ RSpec.describe Chamomile::Commands do
       c1 = -> { :a }
       cmd = batch(c1, nil)
       result = cmd.call
-      expect(result.cmds).to eq([c1])
+      expect(result).to eq([c1])
     end
   end
 
   describe "#sequence" do
-    it "returns a lambda that produces SequenceCmd" do
+    it "returns a lambda that produces a tagged array [:sequence, ...]" do
       c1 = -> { :a }
       c2 = -> { :b }
       cmd = sequence(c1, c2)
       result = cmd.call
-      expect(result).to be_a(Chamomile::SequenceCmd)
-      expect(result.cmds).to eq([c1, c2])
+      expect(result).to be_an(Array)
+      expect(result[0]).to eq(:sequence)
+      expect(result[1..]).to eq([c1, c2])
     end
 
     it "returns nil for empty sequence" do

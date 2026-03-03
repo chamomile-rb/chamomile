@@ -214,7 +214,7 @@ RSpec.describe Chamomile::Program do
     end
   end
 
-  describe "BatchCmd dispatch" do
+  describe "batch dispatch" do
     it "executes all commands in a batch" do
       results = []
       model = Class.new do
@@ -249,7 +249,7 @@ RSpec.describe Chamomile::Program do
     end
   end
 
-  describe "SequenceCmd dispatch" do
+  describe "sequence dispatch" do
     it "executes commands in sequence" do
       order = []
       model = Class.new do
@@ -548,7 +548,7 @@ RSpec.describe Chamomile::Program do
 
       Thread.new do
         sleep(0.01)
-        program.send_msg(Chamomile::SequenceCmd.new(cmds: cmds))
+        program.send_msg([:sequence, *cmds])
       end
 
       expect { program.run }.to raise_error(RuntimeError, "seq error")

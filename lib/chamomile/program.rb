@@ -142,11 +142,12 @@ module Chamomile
         when WindowSizeMsg
           @renderer.resize(msg.width, msg.height)
           # Fall through -- also deliver to model
-        when BatchCmd
-          msg.cmds.each { |c| run_cmd(c) }
-          next
-        when SequenceCmd
-          run_sequence(msg.cmds)
+        when Array
+          if msg[0] == :sequence
+            run_sequence(msg[1..])
+          else
+            msg.each { |c| run_cmd(c) }
+          end
           next
         when ErrorMsg
           raise msg.error
