@@ -20,6 +20,10 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Max: 400
 
+# Commands module is large due to many command helpers
+Metrics/ModuleLength:
+  Max: 160
+
 # event_loop, setup_terminal, dispatch_csi handle many cases
 Metrics/MethodLength:
   Max: 120
@@ -49,6 +53,8 @@ Naming/MethodParameterName:
     - w
     - h
     - i
+    - x
+    - "y"
     - ch
 
 # We prefer annotated format strings but won't enforce everywhere

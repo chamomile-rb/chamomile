@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "concurrent"
+require "open3"
+
 module Chamomile
   # Internal command types intercepted by Program (not delivered to model)
   WindowTitleCmd       = Data.define(:title)
@@ -8,6 +11,16 @@ module Chamomile
   CursorVisibilityCmd  = Data.define(:visible)
   ExecCmd              = Data.define(:command, :args, :callback)
   PrintlnCmd           = Data.define(:text)
+
+  # Internal compound/control command types
+  CancelCmd  = Data.define(:token)
+  StreamCmd  = Data.define(:token, :producer)
+
+  # Typed envelope for shell command results
+  ShellResult = Data.define(:envelope, :stdout, :stderr, :status, :success)
+
+  # Typed envelope for timer ticks
+  TimerTick = Data.define(:envelope, :time)
 
   # Runtime mode-toggle messages (returned as Cmd from update, intercepted by Program)
   EnterAltScreenMsg     = Data.define
@@ -21,6 +34,21 @@ module Chamomile
   DisableReportFocusMsg = Data.define
   ClearScreenMsg        = Data.define
   RequestWindowSizeMsg  = Data.define
+
+  # A cancel token for cancellable commands.
+  class CancelToken
+    def initialize
+      @cancelled = Concurrent::AtomicBoolean.new(false)
+    end
+
+    def cancel!
+      @cancelled.make_true
+    end
+
+    def cancelled?
+      @cancelled.true?
+    end
+  end
 
   # Helper methods for creating command lambdas (quit, batch, tick, etc.).
   module Commands
@@ -64,6 +92,73 @@ module Chamomile
 
     def cmd(callable)
       -> { callable.call }
+    end
+
+    # Posts a message directly to the event queue — no thread, no async.
+    def deliver(msg)
+      -> { msg }
+    end
+
+    # Transforms a command's result before it reaches update.
+    def map(cmd, &transform)
+      return nil if cmd.nil?
+
+      -> {
+        result = cmd.call
+        result ? transform.call(result) : nil
+      }
+    end
+
+    # Creates a cancel token and returns [token, command_wrapper].
+    # The block receives the token for cooperative cancellation checking.
+    def cancellable(&block)
+      token = CancelToken.new
+      wrapped = -> {
+        return nil if token.cancelled?
+
+        block.call(token)
+      }
+      [token, wrapped]
+    end
+
+    # Returns a command that cancels a running token.
+    def cancel(token)
+      -> { CancelCmd.new(token: token) }
+    end
+
+    # A streaming command that emits multiple messages over time.
+    # The block receives a `push` callable and a `token` for cancellation.
+    # Returns [cancel_token, command].
+    def stream(&block)
+      token = CancelToken.new
+      cmd = -> {
+        return nil if token.cancelled?
+
+        StreamCmd.new(token: token, producer: block)
+      }
+      [token, cmd]
+    end
+
+    # Run a shell command and return a ShellResult message with the given envelope name.
+    def shell(command, envelope:, dir: Dir.pwd, env: {})
+      -> {
+        stdout, stderr, status = Open3.capture3(env, command, chdir: dir)
+        ShellResult.new(
+          envelope: envelope,
+          stdout: stdout.force_encoding("UTF-8"),
+          stderr: stderr.force_encoding("UTF-8"),
+          status: status.exitstatus,
+          success: status.success?
+        )
+      }
+    end
+
+    # Fire a timer message with a typed envelope.
+    def timer(duration, envelope:)
+      -> {
+        sleep(duration)
+        TimerTick.new(envelope: envelope, time: Time.now)
+      }
     end
 
     def window_title(title)
@@ -141,6 +236,8 @@ module Chamomile
     end
 
     module_function :quit, :none, :batch, :sequence, :tick, :every, :cmd,
+                    :deliver, :map, :cancellable, :cancel, :stream,
+                    :shell, :timer,
                     :window_title, :cursor_position, :cursor_shape,
                     :show_cursor, :hide_cursor, :exec, :println,
                     :enter_alt_screen, :exit_alt_screen,

@@ -10,6 +10,9 @@ require_relative "chamomile/key_map"
 require_relative "chamomile/renderer"
 require_relative "chamomile/input_reader"
 require_relative "chamomile/program"
+require_relative "chamomile/keymap"
+require_relative "chamomile/router"
+require_relative "chamomile/testing"
 require_relative "chamomile/logging"
 
 # Ruby TUI framework based on the Elm Architecture.

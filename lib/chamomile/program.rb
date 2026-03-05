@@ -6,11 +6,7 @@ module Chamomile
   # Main event loop — wires up Model, Renderer, and InputReader.
   class Program
     def initialize(model, options: nil, **kwargs)
-      @options = if options
-                   options
-                 else
-                   Options.default(**kwargs.compact)
-                 end
+      @options = options || Options.default(**kwargs.compact)
 
       @model        = model
       @output       = @options.output
@@ -22,6 +18,12 @@ module Chamomile
                         Renderer.new(output: @output, fps: @options.fps)
                       end
       @input_reader = InputReader.new(@msgs, input: @input)
+      @executor     = Concurrent::ThreadPoolExecutor.new(
+        min_threads: 2,
+        max_threads: 8,
+        max_queue: 64,
+        fallback_policy: :caller_runs
+      )
       @running      = false
       @torn_down    = false
       @done_mutex   = Mutex.new
@@ -50,17 +52,23 @@ module Chamomile
 
     def send_msg(msg)
       @msgs.push(msg)
+    rescue ClosedQueueError
+      # Program has shut down
     end
 
     # Quit gracefully — model gets a final QuitMsg
     def quit!
       @msgs.push(QuitMsg.new)
+    rescue ClosedQueueError
+      # Already shut down
     end
 
     # Kill immediately — no final message, no cleanup render
     def kill!
       @running = false
       @msgs.push(QuitMsg.new)
+    rescue ClosedQueueError
+      # Already shut down
     end
 
     # Block until the program finishes running
@@ -109,11 +117,13 @@ module Chamomile
       @model
     ensure
       teardown_terminal
+      shutdown_executor
     end
 
     def event_loop
       while @running
         msg = @msgs.pop
+        break if msg.nil? # Queue was closed
 
         # Apply message filter if configured
         if @options.filter
@@ -142,6 +152,12 @@ module Chamomile
         when WindowSizeMsg
           @renderer.resize(msg.width, msg.height)
           # Fall through -- also deliver to model
+        when CancelCmd
+          msg.token.cancel!
+          next
+        when StreamCmd
+          dispatch_stream(msg)
+          next
         when Array
           if msg[0] == :sequence
             run_sequence(msg[1..])
@@ -249,8 +265,14 @@ module Chamomile
         begin
           result = msg.callback.call(success)
           @msgs.push(result) if result && @running
+        rescue ClosedQueueError
+          # Program has shut down
         rescue StandardError => e
-          @msgs.push(ErrorMsg.new(error: e)) if @running
+          begin
+            @msgs.push(ErrorMsg.new(error: e)) if @running
+          rescue ClosedQueueError
+            # discard
+          end
         end
       end
 
@@ -260,26 +282,69 @@ module Chamomile
     def run_cmd(cmd)
       return if cmd.nil?
 
-      Thread.new do
+      @executor.post do
         result = cmd.call
         @msgs.push(result) if result && @running
+      rescue ClosedQueueError
+        # Program has shut down — discard result
       rescue StandardError => e
-        @msgs.push(ErrorMsg.new(error: e)) if @running
+        begin
+          @msgs.push(ErrorMsg.new(error: e)) if @running
+        rescue ClosedQueueError
+          # discard
+        end
       end
     end
 
     def run_sequence(cmds)
-      Thread.new do
+      @executor.post do
         cmds.each do |cmd|
           next if cmd.nil?
+          break unless @running
 
           begin
             result = cmd.call
             @msgs.push(result) if result && @running
-            sleep(0.001)
-          rescue StandardError => e
-            @msgs.push(ErrorMsg.new(error: e)) if @running
+          rescue ClosedQueueError
             break
+          rescue StandardError => e
+            begin
+              @msgs.push(ErrorMsg.new(error: e)) if @running
+            rescue ClosedQueueError
+              # discard
+            end
+            break
+          end
+        end
+      end
+    end
+
+    def running?
+      @running
+    end
+
+    def dispatch_stream(stream_cmd)
+      token = stream_cmd.token
+      producer = stream_cmd.producer
+      queue = @msgs
+      running_ref = method(:running?)
+      @executor.post do
+        push = ->(m) {
+          begin
+            queue.push(m) if m && running_ref.call && !token.cancelled?
+          rescue ClosedQueueError
+            # Program has shut down
+          end
+        }
+        begin
+          producer.call(push, token)
+        rescue ClosedQueueError
+          # Program has shut down
+        rescue StandardError => e
+          begin
+            queue.push(ErrorMsg.new(error: e)) if running_ref.call
+          rescue ClosedQueueError
+            # discard
           end
         end
       end
@@ -377,6 +442,14 @@ module Chamomile
       rescue ArgumentError
         # Signal unsupported on this platform
       end
+    end
+
+    # Final shutdown — close the message queue and drain the thread pool.
+    # Separate from teardown_terminal because exec/suspend do temporary teardowns.
+    def shutdown_executor
+      @msgs.close
+      @executor.shutdown
+      @executor.wait_for_termination(2)
     end
 
     def write_escape(seq)
