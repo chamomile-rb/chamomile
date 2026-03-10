@@ -1,0 +1,17 @@
+module Chamomile
+  module Model
+    def start: () -> untyped?
+    def update: (untyped msg) -> untyped?
+    def view: () -> String
+    def with: (**untyped changes) -> self
+
+    module ClassMethods
+      def frozen_model!: () -> void
+      def frozen_model?: () -> bool
+    end
+
+    module FrozenModelEnforcement
+      def initialize: (*untyped) -> void
+    end
+  end
+end

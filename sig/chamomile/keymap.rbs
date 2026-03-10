@@ -1,0 +1,8 @@
+module Chamomile
+  class Keymap
+    def initialize: () -> void
+    def bind: (String | Symbol | Array[String | Symbol] key, ?guard: (^(untyped) -> bool)?) { () -> untyped } -> Keymap
+    def only: (^(untyped) -> bool guard) { (Keymap) -> void } -> Keymap
+    def handle: (untyped msg, untyped model) -> untyped?
+  end
+end

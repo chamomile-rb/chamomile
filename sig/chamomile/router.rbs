@@ -1,0 +1,10 @@
+module Chamomile
+  module Router
+    def handle_panel_key: (untyped msg) -> untyped?
+
+    module ClassMethods
+      def keymap: () { (Keymap) -> void } -> void
+      def panel_keymap_block: () -> (^(Keymap) -> void)?
+    end
+  end
+end

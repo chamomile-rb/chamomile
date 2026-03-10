@@ -1,0 +1,22 @@
+module Chamomile
+  module Testing
+    class Harness
+      attr_reader model: untyped
+      attr_reader messages: Array[untyped]
+      attr_reader commands_run: Array[untyped]
+
+      def initialize: (untyped model, ?width: Integer, ?height: Integer) -> void
+      def send_key: (String | Symbol key, ?mod: Array[Symbol]) -> void
+      def send_mouse: (x: Integer, y: Integer, ?button: Symbol, ?action: Symbol, ?mod: Array[Symbol]) -> void
+      def send_msg: (untyped msg) -> void
+      def resize: (Integer width, Integer height) -> void
+      def view: () -> String
+      def assert_snapshot: (String name) ?{ (Array[String]) -> Array[String] } -> String
+      def quit?: () -> bool
+    end
+
+    class SnapshotMismatch < StandardError
+      def initialize: (String name, String expected, String actual) -> void
+    end
+  end
+end

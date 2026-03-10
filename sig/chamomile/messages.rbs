@@ -1,0 +1,14 @@
+module Chamomile
+  QuitMsg: untyped
+  KeyMsg: untyped
+  MouseMsg: untyped
+  WindowSizeMsg: untyped
+  TickMsg: untyped
+  ErrorMsg: untyped
+  InterruptMsg: untyped
+  SuspendMsg: untyped
+  ResumeMsg: untyped
+  FocusMsg: untyped
+  BlurMsg: untyped
+  PasteMsg: untyped
+end

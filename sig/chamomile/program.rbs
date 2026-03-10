@@ -1,0 +1,32 @@
+module Chamomile
+  class Program
+    def initialize: (untyped model, ?options: Options?, **untyped kwargs) -> void
+    def run: () -> untyped
+    def send_msg: (untyped msg) -> void
+    def quit!: () -> void
+    def kill!: () -> void
+    def wait: () -> void
+  end
+
+  class NullRenderer
+    attr_reader width: Integer
+    attr_reader height: Integer
+
+    def initialize: () -> void
+    def enter_alt_screen: () -> void
+    def exit_alt_screen: () -> void
+    def enter_inline_mode: () -> void
+    def hide_cursor: () -> void
+    def show_cursor: () -> void
+    def resize: (Integer w, Integer h) -> void
+    def render: (String view_string) -> void
+    def force_render: (String view_string) -> void
+    def clear: () -> void
+    def println: (String str) -> void
+    def println_above: (String str) -> void
+    def move_cursor: (Integer row, Integer col) -> void
+    def apply_cursor_shape: (Symbol shape) -> void
+    def write_window_title: (String title) -> void
+    def stop: () -> void
+  end
+end

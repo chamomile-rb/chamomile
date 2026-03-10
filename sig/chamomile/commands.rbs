@@ -1,0 +1,47 @@
+module Chamomile
+  module Commands
+    def quit: () -> untyped
+    def none: () -> nil
+    def batch: (*untyped cmds) -> untyped
+    def sequence: (*untyped cmds) -> untyped
+    def tick: (Numeric duration) ?{ () -> untyped } -> untyped
+    def every: (Numeric duration) ?{ () -> untyped } -> untyped
+    def cmd: (untyped callable) -> untyped
+    def deliver: (untyped msg) -> untyped
+    def map: (untyped? cmd) { (untyped) -> untyped } -> untyped?
+    def cancellable: () { (CancelToken) -> untyped } -> [CancelToken, untyped]
+    def cancel: (CancelToken token) -> untyped
+    def stream: () { (^(untyped) -> void, CancelToken) -> void } -> [CancelToken, untyped]
+    def shell: (String command, envelope: Symbol, ?dir: String, ?env: Hash[String, String]) -> untyped
+    def timer: (Numeric duration, envelope: Symbol) -> untyped
+    def window_title: (String title) -> untyped
+    def cursor_position: (Integer row, Integer col) -> untyped
+    def cursor_shape: (Symbol shape) -> untyped
+    def show_cursor: () -> untyped
+    def hide_cursor: () -> untyped
+    def exec: (String command, *String args) ?{ (bool?) -> untyped } -> untyped
+    def println: (String text) -> untyped
+    def enter_alt_screen: () -> untyped
+    def exit_alt_screen: () -> untyped
+    def enable_mouse_cell_motion: () -> untyped
+    def enable_mouse_all_motion: () -> untyped
+    def disable_mouse: () -> untyped
+    def enable_bracketed_paste: () -> untyped
+    def disable_bracketed_paste: () -> untyped
+    def enable_report_focus: () -> untyped
+    def disable_report_focus: () -> untyped
+    def clear_screen: () -> untyped
+    def request_window_size: () -> untyped
+  end
+
+  class CancelToken
+    def initialize: () -> void
+    def cancel!: () -> void
+    def cancelled?: () -> bool
+  end
+
+  CancelCmd: untyped
+  StreamCmd: untyped
+  ShellResult: untyped
+  TimerTick: untyped
+end
