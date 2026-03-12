@@ -14,7 +14,7 @@ module Chamomile
   #
   # Then in update:
   #   def update(msg)
-  #     return @keymap.handle(msg, self) if msg.is_a?(KeyMsg)
+  #     return @keymap.handle(msg, self) if msg.is_a?(KeyEvent)
   #     ...
   #   end
   class Keymap
@@ -46,10 +46,10 @@ module Chamomile
       self
     end
 
-    # Process a KeyMsg against the keymap.
+    # Process a KeyEvent against the keymap.
     # Returns the result of the matching action, or nil if no match.
     def handle(msg, model)
-      return nil unless msg.is_a?(KeyMsg)
+      return nil unless msg.is_a?(KeyEvent)
 
       @entries.each do |entry|
         next unless keys_match?(entry.key, msg)

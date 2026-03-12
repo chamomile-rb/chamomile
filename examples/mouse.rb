@@ -3,8 +3,7 @@
 require_relative "../lib/chamomile"
 
 class MouseTracker
-  include Chamomile::Model
-  include Chamomile::Commands
+  include Chamomile::Application
 
   def initialize
     @x = 0
@@ -14,16 +13,20 @@ class MouseTracker
     @events = 0
   end
 
+  on_key("q") { quit }
+
+  on_mouse { |e|
+    @x = e.x
+    @y = e.y
+    @button = e.button.to_s
+    @action = e.action.to_s
+    @events += 1
+  }
+
   def update(msg)
     case msg
-    when Chamomile::KeyMsg
-      return quit if msg.key == "q" || msg.ctrl?
-    when Chamomile::MouseMsg
-      @x = msg.x
-      @y = msg.y
-      @button = msg.button.to_s
-      @action = msg.action.to_s
-      @events += 1
+    when Chamomile::KeyEvent
+      return quit if msg.ctrl?
     end
     nil
   end

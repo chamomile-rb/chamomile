@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Chamomile
-  # Elm Architecture contract: start, update(msg), view.
+  # Core contract: start/on_start, update(msg), view.
   module Model
     def self.included(base)
       base.extend(ClassMethods)
@@ -24,6 +24,10 @@ module Chamomile
     end
 
     def start
+      nil
+    end
+
+    def on_start
       nil
     end
 

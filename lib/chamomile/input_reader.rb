@@ -50,7 +50,7 @@ module Chamomile
         rescue IO::WaitReadable
           # Transient — retry on next iteration
         rescue EOFError, Errno::EIO
-          @queue.push(QuitMsg.new)
+          @queue.push(QuitEvent.new)
           break
         rescue StandardError => e
           Chamomile.log("InputReader error: #{e.class}: #{e.message}", level: :warn)

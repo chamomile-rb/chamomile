@@ -5,16 +5,30 @@ require "open3"
 
 module Chamomile
   # Internal command types intercepted by Program (not delivered to model)
-  WindowTitleCmd       = Data.define(:title)
-  CursorPositionCmd    = Data.define(:row, :col)
-  CursorShapeCmd       = Data.define(:shape)
-  CursorVisibilityCmd  = Data.define(:visible)
-  ExecCmd              = Data.define(:command, :args, :callback)
-  PrintlnCmd           = Data.define(:text)
+  WindowTitleCommand      = Data.define(:title)
+  WindowTitleCmd          = WindowTitleCommand # backward compat
+
+  CursorPositionCommand   = Data.define(:row, :col)
+  CursorPositionCmd       = CursorPositionCommand # backward compat
+
+  CursorShapeCommand      = Data.define(:shape)
+  CursorShapeCmd          = CursorShapeCommand # backward compat
+
+  CursorVisibilityCommand = Data.define(:visible)
+  CursorVisibilityCmd     = CursorVisibilityCommand # backward compat
+
+  ExecCommand             = Data.define(:command, :args, :callback)
+  ExecCmd                 = ExecCommand # backward compat
+
+  PrintlnCommand          = Data.define(:text)
+  PrintlnCmd              = PrintlnCommand # backward compat
 
   # Internal compound/control command types
-  CancelCmd  = Data.define(:token)
-  StreamCmd  = Data.define(:token, :producer)
+  CancelCommand = Data.define(:token)
+  CancelCmd     = CancelCommand # backward compat
+
+  StreamCommand = Data.define(:token, :producer)
+  StreamCmd     = StreamCommand # backward compat
 
   # Typed envelope for shell command results
   ShellResult = Data.define(:envelope, :stdout, :stderr, :status, :success)
@@ -53,7 +67,7 @@ module Chamomile
   # Helper methods for creating command lambdas (quit, batch, tick, etc.).
   module Commands
     def quit
-      -> { QuitMsg.new }
+      -> { QuitEvent.new }
     end
 
     def none
@@ -74,10 +88,16 @@ module Chamomile
       -> { [:sequence, *valid] }
     end
 
+    # Run commands concurrently (Ruby-idiomatic alias for batch)
+    alias parallel batch
+
+    # Run commands in order (Ruby-idiomatic alias for sequence)
+    alias serial sequence
+
     def tick(duration, &block)
       -> {
         sleep(duration)
-        block ? block.call : TickMsg.new(time: Time.now)
+        block ? block.call : TickEvent.new(time: Time.now)
       }
     end
 
@@ -86,7 +106,7 @@ module Chamomile
         now = Time.now
         next_tick = (now + duration) - (now.to_f % duration)
         sleep(next_tick - Time.now)
-        block ? block.call : TickMsg.new(time: Time.now)
+        block ? block.call : TickEvent.new(time: Time.now)
       }
     end
 
@@ -123,7 +143,7 @@ module Chamomile
 
     # Returns a command that cancels a running token.
     def cancel(token)
-      -> { CancelCmd.new(token: token) }
+      -> { CancelCommand.new(token: token) }
     end
 
     # A streaming command that emits multiple messages over time.
@@ -134,7 +154,7 @@ module Chamomile
       cmd = -> {
         return nil if token.cancelled?
 
-        StreamCmd.new(token: token, producer: block)
+        StreamCommand.new(token: token, producer: block)
       }
       [token, cmd]
     end
@@ -162,32 +182,32 @@ module Chamomile
     end
 
     def window_title(title)
-      -> { WindowTitleCmd.new(title: title) }
+      -> { WindowTitleCommand.new(title: title) }
     end
 
     def cursor_position(row, col)
-      -> { CursorPositionCmd.new(row: row, col: col) }
+      -> { CursorPositionCommand.new(row: row, col: col) }
     end
 
     def cursor_shape(shape)
-      -> { CursorShapeCmd.new(shape: shape) }
+      -> { CursorShapeCommand.new(shape: shape) }
     end
 
     def show_cursor
-      -> { CursorVisibilityCmd.new(visible: true) }
+      -> { CursorVisibilityCommand.new(visible: true) }
     end
 
     def hide_cursor
-      -> { CursorVisibilityCmd.new(visible: false) }
+      -> { CursorVisibilityCommand.new(visible: false) }
     end
 
     def exec(command, *args, &callback)
-      -> { ExecCmd.new(command: command, args: args, callback: callback) }
+      -> { ExecCommand.new(command: command, args: args, callback: callback) }
     end
 
     # Print a line above the rendered TUI area
     def println(text)
-      -> { PrintlnCmd.new(text: text) }
+      -> { PrintlnCommand.new(text: text) }
     end
 
     # Runtime mode toggles — return these as commands from update
@@ -235,7 +255,8 @@ module Chamomile
       -> { RequestWindowSizeMsg.new }
     end
 
-    module_function :quit, :none, :batch, :sequence, :tick, :every, :cmd,
+    module_function :quit, :none, :batch, :sequence, :parallel, :serial,
+                    :tick, :every, :cmd,
                     :deliver, :map, :cancellable, :cancel, :stream,
                     :shell, :timer,
                     :window_title, :cursor_position, :cursor_shape,

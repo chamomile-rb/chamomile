@@ -59,18 +59,19 @@ module Chamomile
       @height = height
     end
 
-    def render(view_string)
+    def render(view_output)
+      view_string = resolve_view(view_output)
       @mutex.synchronize do
         now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         elapsed = now - @last_render
 
         if elapsed >= @min_interval
-          flush_render(view_string.to_s)
+          flush_render(view_string)
           @last_render = now
           @pending_view = nil
           cancel_timer
         else
-          @pending_view = view_string.to_s
+          @pending_view = view_string
           schedule_timer(@min_interval - elapsed)
         end
       end
@@ -125,9 +126,10 @@ module Chamomile
     end
 
     # Force an immediate render, bypassing FPS throttle
-    def force_render(view_string)
+    def force_render(view_output)
+      view_string = resolve_view(view_output)
       @mutex.synchronize do
-        flush_render(view_string.to_s)
+        flush_render(view_string)
         @last_render = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         @pending_view = nil
         cancel_timer
@@ -243,6 +245,15 @@ module Chamomile
 
       @timer_thread.kill if @timer_thread.alive?
       @timer_thread = nil
+    end
+
+    # If the view returned a Frame object, render it; otherwise treat as string.
+    def resolve_view(view_output)
+      if view_output.respond_to?(:render) && !view_output.is_a?(String)
+        view_output.render(width: @width, height: @height)
+      else
+        view_output.to_s
+      end
     end
   end
 end

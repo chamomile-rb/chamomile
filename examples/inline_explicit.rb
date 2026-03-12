@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+# Inline Spinner — explicit Flourish style
+# Run: ruby examples/inline_explicit.rb
+# Compare: examples/inline_dsl.rb
+
 require_relative "../lib/chamomile"
+require "flourish"
 
 class InlineSpinner
   include Chamomile::Application
@@ -28,14 +33,6 @@ class InlineSpinner
     tick(0.1)
   end
 
-  def update(msg)
-    case msg
-    when Chamomile::KeyEvent
-      return quit if msg.ctrl?
-    end
-    nil
-  end
-
   def view
     spinner = FRAMES[@frame]
     bar_width = 30
@@ -43,11 +40,11 @@ class InlineSpinner
     empty = bar_width - filled
     bar = "#{"=" * filled}#{" " * empty}"
 
-    lines = []
-    lines << "#{spinner} Processing... #{@progress}%"
-    lines << "[#{bar}]"
-    lines << "Press q to cancel."
-    lines.join("\n")
+    Flourish.vertical([
+      "#{spinner} Processing... #{@progress}%",
+      "[#{bar}]",
+      "Press q to cancel."
+    ], align: :left)
   end
 end
 

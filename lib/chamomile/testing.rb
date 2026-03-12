@@ -17,22 +17,25 @@ module Chamomile
         @quit = false
 
         # Deliver initial window size
-        deliver(Chamomile::WindowSizeMsg.new(width: width, height: height))
+        deliver(Chamomile::ResizeEvent.new(width: width, height: height))
 
         # Run start command if any
-        if (start_cmd = model.start)
+        if model.respond_to?(:on_start, true) && model.method(:on_start).owner != Chamomile::Model
+          start_cmd = model.send(:on_start)
+          run_cmd_sync(start_cmd) if start_cmd
+        elsif (start_cmd = model.start)
           run_cmd_sync(start_cmd)
         end
       end
 
       # Send a key event to the model
       def send_key(key, mod: [])
-        deliver(Chamomile::KeyMsg.new(key: key, mod: Array(mod)))
+        deliver(Chamomile::KeyEvent.new(key: key, mod: Array(mod)))
       end
 
       # Send a mouse event
       def send_mouse(x:, y:, button: :left, action: :press, mod: [])
-        deliver(Chamomile::MouseMsg.new(x: x, y: y, button: button, action: action, mod: mod))
+        deliver(Chamomile::MouseEvent.new(x: x, y: y, button: button, action: action, mod: mod))
       end
 
       # Send any message directly
@@ -44,7 +47,7 @@ module Chamomile
       def resize(width, height)
         @width = width
         @height = height
-        deliver(Chamomile::WindowSizeMsg.new(width: width, height: height))
+        deliver(Chamomile::ResizeEvent.new(width: width, height: height))
       end
 
       # Get current rendered view
@@ -85,7 +88,7 @@ module Chamomile
         result = begin
           cmd.call
         rescue StandardError => e
-          ErrorMsg.new(error: e)
+          ErrorEvent.new(error: e)
         end
 
         case result
@@ -95,18 +98,18 @@ module Chamomile
           else
             result.compact.each { |c| run_cmd_sync(c) }
           end
-        when CancelCmd
+        when CancelCommand
           result.token.cancel!
-        when StreamCmd
+        when StreamCommand
           # In test mode, run stream producer synchronously with a collecting push
           push = ->(m) { deliver(m) if m && !@quit }
           result.producer.call(push, result.token)
-        when QuitMsg
+        when QuitEvent
           @quit = true
-        when ErrorMsg
+        when ErrorEvent
           raise result.error
-        when WindowTitleCmd, CursorPositionCmd, CursorShapeCmd, CursorVisibilityCmd,
-             ExecCmd, PrintlnCmd,
+        when WindowTitleCommand, CursorPositionCommand, CursorShapeCommand, CursorVisibilityCommand,
+             ExecCommand, PrintlnCommand,
              EnterAltScreenMsg, ExitAltScreenMsg,
              EnableMouseCellMotionMsg, EnableMouseAllMotionMsg, DisableMouseMsg,
              EnableBracketedPasteMsg, DisableBracketedPasteMsg,
