@@ -23,6 +23,7 @@ gem "chamomile"
 
 ```ruby
 require "chamomile"
+require "flourish"
 
 class Counter
   include Chamomile::Application
@@ -33,15 +34,52 @@ class Counter
 
   on_key(:up, "k")   { @count += 1 }
   on_key(:down, "j") { @count -= 1 }
+  on_key("r")        { @count = 0 }
   on_key("q")        { quit }
 
   def view
-    "Count: #{@count}\n\nup/k increment  |  down/j decrement  |  q quit"
+    panel(title: "Counter", border: :rounded, color: "#7d56f4") do
+      text "Count: #{@count}", bold: true, color: "#7d56f4"
+      text ""
+      status_bar "↑/k increment · ↓/j decrement · r reset · q quit"
+    end
   end
 end
 
 Chamomile.run(Counter.new)
 ```
+
+### View DSL vs Explicit Flourish
+
+The view DSL compiles down to Flourish calls — use whichever style you prefer:
+
+```ruby
+# DSL — declarative, concise
+def view
+  panel(title: "Counter", border: :rounded, color: "#7d56f4") do
+    text "Count: #{@count}", bold: true, color: "#7d56f4"
+    text ""
+    status_bar "↑/k increment · ↓/j decrement · r reset · q quit"
+  end
+end
+
+# Explicit Flourish — full control
+def view
+  title = Flourish::Style.new.bold.foreground("#7d56f4").render("Count: #{@count}")
+  help  = Flourish::Style.new.foreground("#666666").render(
+            "↑/k increment · ↓/j decrement · r reset · q quit"
+          )
+  body  = Flourish.vertical([title, "", help], align: :left)
+
+  Flourish::Style.new
+    .border(Flourish::Border::ROUNDED)
+    .border_foreground("#7d56f4")
+    .padding(0, 1)
+    .render(body)
+end
+```
+
+Both produce the same output. The DSL handles the Flourish wiring for you; the explicit style is there when you need fine-grained control.
 
 ## How It Works
 
@@ -116,13 +154,16 @@ Chamomile.run(model,
 
 ## Examples
 
+Each example comes in two flavors — `_dsl` (View DSL) and `_explicit` (manual Flourish):
+
 ```sh
-ruby examples/hello.rb       # minimal hello world
-ruby examples/counter.rb     # counter with tick timer
-ruby examples/list.rb        # navigable list
-ruby examples/mouse.rb       # mouse event display
-ruby examples/exec.rb        # shell out to $EDITOR
-ruby examples/inline.rb      # non-fullscreen inline mode
+ruby examples/counter_dsl.rb      # counter with styled panel
+ruby examples/counter_explicit.rb # same thing, explicit Flourish
+ruby examples/list_dsl.rb         # selectable list
+ruby examples/hello_dsl.rb        # minimal hello world
+ruby examples/mouse_dsl.rb        # mouse event display
+ruby examples/exec_dsl.rb         # shell out to $EDITOR
+ruby examples/inline_dsl.rb       # non-fullscreen inline mode
 ```
 
 ## Ecosystem
