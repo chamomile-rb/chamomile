@@ -56,9 +56,9 @@ module Chamomile
       # Program has shut down
     end
 
-    # Quit gracefully — model gets a final QuitMsg
+    # Quit gracefully — model gets a final QuitEvent
     def quit!
-      @msgs.push(QuitMsg.new)
+      @msgs.push(QuitEvent.new)
     rescue ClosedQueueError
       # Already shut down
     end
@@ -66,7 +66,7 @@ module Chamomile
     # Kill immediately — no final message, no cleanup render
     def kill!
       @running = false
-      @msgs.push(QuitMsg.new)
+      @msgs.push(QuitEvent.new)
     rescue ClosedQueueError
       # Already shut down
     end
@@ -106,7 +106,11 @@ module Chamomile
 
       send_msg(build_window_size_msg)
 
-      if (start_cmd = @model.start)
+      # on_start hook takes precedence; fall back to start (backward compat)
+      if @model.respond_to?(:on_start, true) && @model.method(:on_start).owner != Chamomile::Model
+        start_cmd = @model.send(:on_start)
+        run_cmd(start_cmd) if start_cmd
+      elsif (start_cmd = @model.start)
         run_cmd(start_cmd)
       end
 
@@ -132,10 +136,10 @@ module Chamomile
         end
 
         case msg
-        when QuitMsg
+        when QuitEvent
           @running = false
           break
-        when InterruptMsg
+        when InterruptEvent
           begin
             cmd = @model.update(msg)
             run_cmd(cmd) if cmd
@@ -146,16 +150,16 @@ module Chamomile
             break
           end
           next
-        when SuspendMsg
+        when SuspendEvent
           handle_suspend
           next
-        when WindowSizeMsg
+        when ResizeEvent
           @renderer.resize(msg.width, msg.height)
           # Fall through -- also deliver to model
-        when CancelCmd
+        when CancelCommand
           msg.token.cancel!
           next
-        when StreamCmd
+        when StreamCommand
           dispatch_stream(msg)
           next
         when Array
@@ -165,26 +169,26 @@ module Chamomile
             msg.each { |c| run_cmd(c) }
           end
           next
-        when ErrorMsg
+        when ErrorEvent
           raise msg.error
 
         # Renderer commands — intercepted, not delivered to model
-        when WindowTitleCmd
+        when WindowTitleCommand
           @renderer.write_window_title(msg.title)
           next
-        when CursorPositionCmd
+        when CursorPositionCommand
           @renderer.move_cursor(msg.row, msg.col)
           next
-        when CursorShapeCmd
+        when CursorShapeCommand
           @renderer.apply_cursor_shape(msg.shape)
           next
-        when CursorVisibilityCmd
+        when CursorVisibilityCommand
           msg.visible ? @renderer.show_cursor : @renderer.hide_cursor
           next
-        when ExecCmd
+        when ExecCommand
           handle_exec(msg)
           next
-        when PrintlnCmd
+        when PrintlnCommand
           @renderer.println_above(msg.text)
           next
 
@@ -238,7 +242,7 @@ module Chamomile
     end
 
     def handle_suspend
-      deliver_to_model(SuspendMsg.new)
+      deliver_to_model(SuspendEvent.new)
 
       teardown_terminal
       Process.kill("SIGSTOP", Process.pid)
@@ -247,7 +251,7 @@ module Chamomile
       setup_terminal
       send_msg(build_window_size_msg)
 
-      deliver_to_model(ResumeMsg.new)
+      deliver_to_model(ResumeEvent.new)
 
       @renderer.render(@model.view)
     end
@@ -269,7 +273,7 @@ module Chamomile
           # Program has shut down
         rescue StandardError => e
           begin
-            @msgs.push(ErrorMsg.new(error: e)) if @running
+            @msgs.push(ErrorEvent.new(error: e)) if @running
           rescue ClosedQueueError
             # discard
           end
@@ -289,7 +293,7 @@ module Chamomile
         # Program has shut down — discard result
       rescue StandardError => e
         begin
-          @msgs.push(ErrorMsg.new(error: e)) if @running
+          @msgs.push(ErrorEvent.new(error: e)) if @running
         rescue ClosedQueueError
           # discard
         end
@@ -309,7 +313,7 @@ module Chamomile
             break
           rescue StandardError => e
             begin
-              @msgs.push(ErrorMsg.new(error: e)) if @running
+              @msgs.push(ErrorEvent.new(error: e)) if @running
             rescue ClosedQueueError
               # discard
             end
@@ -342,7 +346,7 @@ module Chamomile
           # Program has shut down
         rescue StandardError => e
           begin
-            queue.push(ErrorMsg.new(error: e)) if running_ref.call
+            queue.push(ErrorEvent.new(error: e)) if running_ref.call
           rescue ClosedQueueError
             # discard
           end
@@ -388,11 +392,11 @@ module Chamomile
       # Signal handling
       if @options.handle_signals
         Signal.trap("SIGWINCH") { @msgs.push(build_window_size_msg) }
-        Signal.trap("SIGINT") { @msgs.push(InterruptMsg.new) }
-        Signal.trap("SIGTERM") { @msgs.push(QuitMsg.new) }
+        Signal.trap("SIGINT") { @msgs.push(InterruptEvent.new) }
+        Signal.trap("SIGTERM") { @msgs.push(QuitEvent.new) }
         begin
           Signal.trap("SIGTSTP") do
-            @msgs.push(SuspendMsg.new)
+            @msgs.push(SuspendEvent.new)
           end
         rescue ArgumentError # rubocop:disable Lint/SuppressedException -- SIGTSTP unsupported on some platforms
         end
@@ -464,14 +468,14 @@ module Chamomile
 
     def build_window_size_msg
       if @options.initial_width && @options.initial_height
-        WindowSizeMsg.new(width: @options.initial_width, height: @options.initial_height)
+        ResizeEvent.new(width: @options.initial_width, height: @options.initial_height)
       else
         rows, cols = begin
           @output.winsize
         rescue StandardError
           [24, 80]
         end
-        WindowSizeMsg.new(width: cols, height: rows)
+        ResizeEvent.new(width: cols, height: rows)
       end
     end
   end

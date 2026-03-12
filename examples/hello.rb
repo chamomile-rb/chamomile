@@ -3,16 +3,10 @@
 require_relative "../lib/chamomile"
 
 class Hello
-  include Chamomile::Model
-  include Chamomile::Commands
+  include Chamomile::Application
 
-  def update(msg)
-    case msg
-    when Chamomile::KeyMsg
-      return quit if msg.key == "q" || msg.ctrl?
-    end
-    nil
-  end
+  on_key("q") { quit }
+  on_key(:ctrl_c) { quit }
 
   def view
     "Hello from Chamomile!\n\nPress q to quit."

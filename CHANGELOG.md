@@ -7,9 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Chamomile::Application` — single mixin that includes both Model and Commands
+- Declarative callback DSL: `on_key`, `on_resize`, `on_tick`, `on_mouse`, `on_focus`, `on_blur`, `on_paste`
+- `on_start` lifecycle hook — imperative alternative to `start` returning a command
+- `parallel`/`serial` command helpers (aliases for `batch`/`sequence`)
+- `Frame.build` view DSL with Panel, Text, HorizontalLayout, VerticalLayout, StatusBar widgets
+- Event type aliases: `KeyEvent`, `MouseEvent`, `ResizeEvent`, `TickEvent`, `FocusEvent`, `BlurEvent`, `PasteEvent`, `InterruptEvent`, `SuspendEvent`, `ResumeEvent`, `ErrorEvent`, `QuitEvent`
+- Command type aliases: `ExecCommand`, `PrintlnCommand`, `WindowTitleCommand`, `CursorShapeCommand`, `CursorPositionCommand`, `CursorVisibilityCommand`, `CancelCommand`, `StreamCommand`
+
 ### Changed
 
 - Renamed `Model#init` to `Model#start` — cleaner Ruby idiom; `start`, `update`, `view` now form a consistent verb-trio API
+- All event types renamed from `*Msg` to `*Event` (old names kept as backward-compatible aliases)
+- All command types renamed from `*Cmd` to `*Command` (old names kept as backward-compatible aliases)
+- `WindowSizeMsg` renamed to `ResizeEvent` (old name kept as alias)
+- README rewritten: removed Elm Architecture references, uses event-driven terminology
+- All examples updated to use `Chamomile::Application` and callback DSL
 
 ## [0.1.0] - 2026-02-27
 

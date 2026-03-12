@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Chamomile
-  # Backward-compat sequence-to-KeyMsg translator (delegates to EscapeParser).
+  # Backward-compat sequence-to-KeyEvent translator (delegates to EscapeParser).
   module KeyMap
     SEQUENCES = {
       "\e[A" => [:up,        []],
@@ -62,7 +62,7 @@ module Chamomile
     # New code should use EscapeParser directly for streaming/buffered parsing.
     def self.translate(bytes)
       # For bare ESC, use the static map (parser would need a timeout to flush it)
-      return KeyMsg.new(key: :escape, mod: []) if bytes == "\x1b"
+      return KeyEvent.new(key: :escape, mod: []) if bytes == "\x1b"
 
       # Use parser for everything else
       msgs = []
@@ -70,7 +70,7 @@ module Chamomile
       parser.feed(bytes) { |msg| msgs << msg }
       parser.timeout! { |msg| msgs << msg }
 
-      msgs.first || KeyMsg.new(key: bytes, mod: [:unknown])
+      msgs.first || KeyEvent.new(key: bytes, mod: [:unknown])
     end
   end
 end

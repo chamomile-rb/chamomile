@@ -44,7 +44,7 @@ module Chamomile
 
       @state = GROUND
       @buf.clear
-      yield KeyMsg.new(key: :escape, mod: [])
+      yield KeyEvent.new(key: :escape, mod: [])
     end
 
     private
@@ -72,16 +72,16 @@ module Chamomile
         @state = ESC_SEEN
         @buf = +"\e"
       when "\r", "\n"
-        yield KeyMsg.new(key: :enter, mod: [])
+        yield KeyEvent.new(key: :enter, mod: [])
       when "\t"
-        yield KeyMsg.new(key: :tab, mod: [])
+        yield KeyEvent.new(key: :tab, mod: [])
       when "\x7f", "\x08"
-        yield KeyMsg.new(key: :backspace, mod: [])
+        yield KeyEvent.new(key: :backspace, mod: [])
       when ->(c) { c.ord.between?(1, 26) }
         letter = (ch.ord + 96).chr # \x01 -> 'a', \x02 -> 'b', etc.
-        yield KeyMsg.new(key: letter, mod: [:ctrl])
+        yield KeyEvent.new(key: letter, mod: [:ctrl])
       when ->(c) { c.ord >= 32 }
-        yield KeyMsg.new(key: ch, mod: [])
+        yield KeyEvent.new(key: ch, mod: [])
       end
     end
 
@@ -95,7 +95,7 @@ module Chamomile
         @buf << ch
       when "\e"
         # Another ESC: flush previous ESC as :escape, start new ESC
-        yield KeyMsg.new(key: :escape, mod: [])
+        yield KeyEvent.new(key: :escape, mod: [])
         @buf = +"\e"
         # Stay in ESC_SEEN
       else
@@ -103,16 +103,16 @@ module Chamomile
         @state = GROUND
         @buf.clear
         if ["\x7f", "\x08"].include?(ch)
-          yield KeyMsg.new(key: :backspace, mod: [:alt])
+          yield KeyEvent.new(key: :backspace, mod: [:alt])
         elsif ch.ord >= 32
-          yield KeyMsg.new(key: ch, mod: [:alt])
+          yield KeyEvent.new(key: ch, mod: [:alt])
         elsif ["\r", "\n"].include?(ch)
-          yield KeyMsg.new(key: :enter, mod: [:alt])
+          yield KeyEvent.new(key: :enter, mod: [:alt])
         elsif ch == "\t"
-          yield KeyMsg.new(key: :tab, mod: [:alt])
+          yield KeyEvent.new(key: :tab, mod: [:alt])
         elsif ch.ord.between?(1, 26)
           letter = (ch.ord + 96).chr
-          yield KeyMsg.new(key: letter, mod: %i[alt ctrl])
+          yield KeyEvent.new(key: letter, mod: %i[alt ctrl])
         end
       end
     end
@@ -147,18 +147,18 @@ module Chamomile
       @buf.clear
 
       case ch
-      when "P" then yield KeyMsg.new(key: :f1, mod: [])
-      when "Q" then yield KeyMsg.new(key: :f2, mod: [])
-      when "R" then yield KeyMsg.new(key: :f3, mod: [])
-      when "S" then yield KeyMsg.new(key: :f4, mod: [])
-      when "A" then yield KeyMsg.new(key: :up, mod: [])
-      when "B" then yield KeyMsg.new(key: :down, mod: [])
-      when "C" then yield KeyMsg.new(key: :right, mod: [])
-      when "D" then yield KeyMsg.new(key: :left, mod: [])
-      when "H" then yield KeyMsg.new(key: :home, mod: [])
-      when "F" then yield KeyMsg.new(key: :end_key, mod: [])
+      when "P" then yield KeyEvent.new(key: :f1, mod: [])
+      when "Q" then yield KeyEvent.new(key: :f2, mod: [])
+      when "R" then yield KeyEvent.new(key: :f3, mod: [])
+      when "S" then yield KeyEvent.new(key: :f4, mod: [])
+      when "A" then yield KeyEvent.new(key: :up, mod: [])
+      when "B" then yield KeyEvent.new(key: :down, mod: [])
+      when "C" then yield KeyEvent.new(key: :right, mod: [])
+      when "D" then yield KeyEvent.new(key: :left, mod: [])
+      when "H" then yield KeyEvent.new(key: :home, mod: [])
+      when "F" then yield KeyEvent.new(key: :end_key, mod: [])
       else
-        yield KeyMsg.new(key: seq, mod: [:unknown])
+        yield KeyEvent.new(key: seq, mod: [:unknown])
       end
     end
 
@@ -172,18 +172,18 @@ module Chamomile
 
       if seq == PASTE_END
         # Shouldn't happen in CSI (we'd be in PASTE state), but handle gracefully
-        yield PasteMsg.new(content: @paste_buf.dup)
+        yield PasteEvent.new(content: @paste_buf.dup)
         @paste_buf.clear
         return
       end
 
       # Focus/Blur: \e[I (focus) and \e[O (blur)
       if seq == "\e[I"
-        yield FocusMsg.new
+        yield FocusEvent.new
         return
       end
       if seq == "\e[O"
-        yield BlurMsg.new
+        yield BlurEvent.new
         return
       end
 
@@ -208,11 +208,11 @@ module Chamomile
       when "D" then yield key_with_modifiers(:left, params)
       when "H" then yield key_with_modifiers(:home, params)
       when "F" then yield key_with_modifiers(:end_key, params)
-      when "Z" then yield KeyMsg.new(key: :tab, mod: [:shift]) # Shift+Tab
+      when "Z" then yield KeyEvent.new(key: :tab, mod: [:shift]) # Shift+Tab
       when "~"
         dispatch_tilde(params, &)
       else
-        yield KeyMsg.new(key: seq, mod: [:unknown])
+        yield KeyEvent.new(key: seq, mod: [:unknown])
       end
     end
 
@@ -240,14 +240,14 @@ module Chamomile
               @paste_buf.clear
               return
             when 201
-              yield PasteMsg.new(content: @paste_buf.dup)
+              yield PasteEvent.new(content: @paste_buf.dup)
               @paste_buf.clear
               return
             else
-              return yield KeyMsg.new(key: "\e[#{params.join(";")}~", mod: [:unknown])
+              return yield KeyEvent.new(key: "\e[#{params.join(";")}~", mod: [:unknown])
             end
 
-      yield KeyMsg.new(key: key, mod: mod || [])
+      yield KeyEvent.new(key: key, mod: mod || [])
     end
 
     def dispatch_sgr_mouse(seq)
@@ -283,7 +283,7 @@ module Chamomile
         action = pressed ? MOUSE_PRESS : MOUSE_RELEASE
       end
 
-      yield MouseMsg.new(x: cx, y: cy, button: button, action: action, mod: mod)
+      yield MouseEvent.new(x: cx, y: cy, button: button, action: action, mod: mod)
     end
 
     def paste_char(ch)
@@ -294,13 +294,13 @@ module Chamomile
         content = @paste_buf[0..-(PASTE_END.length + 1)]
         @paste_buf.clear
         @state = GROUND
-        yield PasteMsg.new(content: content)
+        yield PasteEvent.new(content: content)
       elsif @paste_buf.bytesize > MAX_PASTE_SIZE
         # Prevent memory exhaustion — flush what we have and reset
         content = @paste_buf.dup
         @paste_buf.clear
         @state = GROUND
-        yield PasteMsg.new(content: content)
+        yield PasteEvent.new(content: content)
       end
     end
 
@@ -316,9 +316,9 @@ module Chamomile
     def key_with_modifiers(key, params)
       if params.length >= 2
         mod = extract_modifiers(params[1])
-        KeyMsg.new(key: key, mod: mod)
+        KeyEvent.new(key: key, mod: mod)
       else
-        KeyMsg.new(key: key, mod: [])
+        KeyEvent.new(key: key, mod: [])
       end
     end
 

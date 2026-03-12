@@ -6,8 +6,8 @@ Gem::Specification.new do |spec|
   spec.name          = "chamomile"
   spec.version       = Chamomile::VERSION
   spec.authors       = ["Chamomile Contributors"]
-  spec.summary       = "A Ruby TUI framework based on The Elm Architecture"
-  spec.description   = "Build rich terminal UIs in Ruby using the Model/Update/View pattern"
+  spec.summary       = "An event-driven Ruby TUI framework"
+  spec.description   = "Build interactive terminal applications with declarative callbacks, composable layouts, and a clean DSL"
   spec.license       = "MIT"
   spec.require_paths = ["lib"]
   spec.files         = Dir["lib/**/*.rb"]

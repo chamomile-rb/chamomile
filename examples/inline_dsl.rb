@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+# Inline Spinner — DSL style
+# Run: ruby examples/inline_dsl.rb
+# Compare: examples/inline_explicit.rb
+
 require_relative "../lib/chamomile"
+require "flourish"
 
 class InlineSpinner
   include Chamomile::Application
@@ -13,7 +18,6 @@ class InlineSpinner
   end
 
   on_key("q") { quit }
-  on_key(:ctrl_c) { quit }
 
   on_tick {
     @frame = (@frame + 1) % FRAMES.length
@@ -36,16 +40,18 @@ class InlineSpinner
     empty = bar_width - filled
     bar = "#{"=" * filled}#{" " * empty}"
 
-    lines = []
-    lines << "#{spinner} Processing... #{@progress}%"
-    lines << "[#{bar}]"
-    lines << "Press q to cancel."
-    lines.join("\n")
+    vertical(align: :left) do
+      text "#{spinner} Processing... #{@progress}%"
+      text "[#{bar}]"
+      text "Press q to cancel."
+    end
   end
 end
 
 puts "Inline mode spinner example:"
 puts "(This renders within your scrollback, no alt screen)"
 puts ""
-Chamomile.run(InlineSpinner.new, alt_screen: false)
+Chamomile.run(InlineSpinner.new) do |config|
+  config.alt_screen = false
+end
 puts "\nDone!"

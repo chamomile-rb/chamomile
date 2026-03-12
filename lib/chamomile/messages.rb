@@ -1,16 +1,19 @@
 # frozen_string_literal: true
 
 module Chamomile
-  QuitMsg = Data.define
+  QuitEvent = Data.define
+  QuitMsg   = QuitEvent # backward compat
 
-  WindowSizeMsg = Data.define(:width, :height)
+  ResizeEvent   = Data.define(:width, :height)
+  WindowSizeMsg = ResizeEvent # backward compat
 
-  KeyMsg = Data.define(:key, :mod) do
+  KeyEvent = Data.define(:key, :mod) do
     def ctrl?  = mod.include?(:ctrl)
     def shift? = mod.include?(:shift)
     def alt?   = mod.include?(:alt)
     def to_s   = mod.empty? ? key.to_s : "#{mod.join("+")}+#{key}"
   end
+  KeyMsg = KeyEvent # backward compat
 
   # Mouse button constants
   MOUSE_LEFT    = :left
@@ -25,7 +28,7 @@ module Chamomile
   MOUSE_RELEASE = :release
   MOUSE_MOTION  = :motion
 
-  MouseMsg = Data.define(:x, :y, :button, :action, :mod) do
+  MouseEvent = Data.define(:x, :y, :button, :action, :mod) do
     def press?   = action == MOUSE_PRESS
     def release? = action == MOUSE_RELEASE
     def motion?  = action == MOUSE_MOTION
@@ -34,16 +37,29 @@ module Chamomile
     def alt?     = mod.include?(:alt)
     def wheel?   = [MOUSE_WHEEL_UP, MOUSE_WHEEL_DOWN].include?(button)
   end
+  MouseMsg = MouseEvent # backward compat
 
-  PasteMsg = Data.define(:content)
+  PasteEvent = Data.define(:content)
+  PasteMsg   = PasteEvent # backward compat
 
-  FocusMsg = Data.define
-  BlurMsg  = Data.define
+  FocusEvent = Data.define
+  FocusMsg   = FocusEvent # backward compat
 
-  InterruptMsg = Data.define
-  SuspendMsg   = Data.define
-  ResumeMsg    = Data.define
+  BlurEvent = Data.define
+  BlurMsg   = BlurEvent # backward compat
 
-  ErrorMsg = Data.define(:error)
-  TickMsg  = Data.define(:time)
+  InterruptEvent = Data.define
+  InterruptMsg   = InterruptEvent # backward compat
+
+  SuspendEvent = Data.define
+  SuspendMsg   = SuspendEvent # backward compat
+
+  ResumeEvent = Data.define
+  ResumeMsg   = ResumeEvent # backward compat
+
+  ErrorEvent = Data.define(:error)
+  ErrorMsg   = ErrorEvent # backward compat
+
+  TickEvent = Data.define(:time)
+  TickMsg   = TickEvent # backward compat
 end

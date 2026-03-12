@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+# Item List — DSL style
+# Run: ruby examples/list_dsl.rb
+# Compare: examples/list_explicit.rb
+
 require_relative "../lib/chamomile"
+require "flourish"
 
 class ItemList
   include Chamomile::Application
@@ -24,14 +29,19 @@ class ItemList
   on_key("q") { quit }
 
   def view
-    lines = ["Pick some items:\n\n"]
-    ITEMS.each_with_index do |item, i|
+    items = ITEMS.each_with_index.map do |item, i|
       cursor  = @cursor == i ? ">" : " "
       checked = @selected[i] ? "x" : " "
-      lines << "#{cursor} [#{checked}] #{item}"
+      "#{cursor} [#{checked}] #{item}"
     end
-    lines << "\n\nSpace/Enter to select, q to quit"
-    lines.join("\n")
+
+    vertical(align: :left) do
+      text "Pick some items:", bold: true
+      text ""
+      items.each { |line| text line }
+      text ""
+      status_bar "Space/Enter to select, q to quit"
+    end
   end
 end
 

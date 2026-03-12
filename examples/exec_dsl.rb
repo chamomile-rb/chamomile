@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+# Editor Launcher — DSL style
+# Run: ruby examples/exec_dsl.rb
+# Compare: examples/exec_explicit.rb
+
 require_relative "../lib/chamomile"
+require "flourish"
 require "tempfile"
 
 class EditorLauncher
@@ -21,18 +26,17 @@ class EditorLauncher
   }
 
   def view
-    lines = []
-    lines << "Editor Launcher"
-    lines << "==============="
-    lines << ""
-    if @launched
-      lines << "Editor was launched for: #{@file.path}"
-      lines << "Press e to edit again, q to quit."
-    else
-      lines << "Press e to launch $EDITOR"
-      lines << "Press q to quit."
+    vertical(align: :left) do
+      text "Editor Launcher", bold: true, color: "#7d56f4"
+      text ""
+      if @launched
+        text "Editor was launched for: #{@file.path}"
+        text "Press e to edit again, q to quit."
+      else
+        text "Press e to launch $EDITOR"
+        text "Press q to quit."
+      end
     end
-    lines.join("\n")
   end
 end
 
