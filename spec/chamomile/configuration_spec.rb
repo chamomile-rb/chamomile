@@ -11,7 +11,7 @@ RSpec.describe Chamomile::Configuration do
       expect(config.bracketed_paste).to be true
       expect(config.report_focus).to be false
       expect(config.fps).to eq(60)
-      expect(config.catch_panics).to be false
+      expect(config.catch_panics).to be true
     end
   end
 

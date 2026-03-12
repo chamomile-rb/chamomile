@@ -14,6 +14,7 @@ class MouseTracker
   end
 
   on_key("q") { quit }
+  on_key(:ctrl_c) { quit }
 
   on_mouse { |e|
     @x = e.x
@@ -22,14 +23,6 @@ class MouseTracker
     @action = e.action.to_s
     @events += 1
   }
-
-  def update(msg)
-    case msg
-    when Chamomile::KeyEvent
-      return quit if msg.ctrl?
-    end
-    nil
-  end
 
   def view
     lines = []

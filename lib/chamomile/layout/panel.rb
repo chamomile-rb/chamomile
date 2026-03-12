@@ -30,6 +30,10 @@ module Chamomile
         self
       end
 
+      def explicit_width?
+        !@width.nil?
+      end
+
       def resolved_width(available_width)
         return available_width unless @width
         if @width.is_a?(String) && @width.end_with?("%")

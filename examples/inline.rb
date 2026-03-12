@@ -13,6 +13,7 @@ class InlineSpinner
   end
 
   on_key("q") { quit }
+  on_key(:ctrl_c) { quit }
 
   on_tick {
     @frame = (@frame + 1) % FRAMES.length
@@ -26,14 +27,6 @@ class InlineSpinner
 
   def on_start
     tick(0.1)
-  end
-
-  def update(msg)
-    case msg
-    when Chamomile::KeyEvent
-      return quit if msg.ctrl?
-    end
-    nil
   end
 
   def view

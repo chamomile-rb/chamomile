@@ -8,14 +8,6 @@ class Hello
   on_key("q") { quit }
   on_key(:ctrl_c) { quit }
 
-  def update(msg)
-    case msg
-    when Chamomile::KeyEvent
-      return quit if msg.ctrl?
-    end
-    nil
-  end
-
   def view
     "Hello from Chamomile!\n\nPress q to quit."
   end

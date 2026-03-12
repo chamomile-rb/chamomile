@@ -18,7 +18,7 @@ module Chamomile
       @bracketed_paste = true
       @report_focus    = false
       @fps             = 60
-      @catch_panics    = false
+      @catch_panics    = true
     end
 
     def to_h

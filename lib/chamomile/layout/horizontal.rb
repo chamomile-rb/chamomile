@@ -16,14 +16,14 @@ module Chamomile
       def render(width:, height:)
         return "" if @children.empty?
 
-        explicit  = @children.select { |c| c.respond_to?(:resolved_width) }
-        flexible  = @children.reject { |c| c.respond_to?(:resolved_width) }
+        explicit  = @children.select { |c| c.respond_to?(:explicit_width?) && c.explicit_width? }
+        flexible  = @children - explicit
 
         used = explicit.sum { |c| c.resolved_width(width) }
         flex_width = flexible.empty? ? 0 : (width - used) / flexible.size
 
         parts = @children.map do |child|
-          w = child.respond_to?(:resolved_width) ? child.resolved_width(width) : flex_width
+          w = explicit.include?(child) ? child.resolved_width(width) : flex_width
           child.render(width: w, height: height)
         end
 

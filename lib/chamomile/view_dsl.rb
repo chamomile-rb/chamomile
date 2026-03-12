@@ -11,6 +11,9 @@ module Chamomile
       yield
       _layout_stack.pop
       _layout_stack.empty? ? layout : (_layout_stack.last.add(layout) && nil)
+    rescue StandardError
+      _layout_stack.pop
+      raise
     end
 
     def horizontal(align: :top, &block)
@@ -19,6 +22,9 @@ module Chamomile
       yield
       _layout_stack.pop
       _layout_stack.empty? ? layout : (_layout_stack.last.add(layout) && nil)
+    rescue StandardError
+      _layout_stack.pop
+      raise
     end
 
     def panel(title: nil, width: nil, border: :rounded, color: nil, focused: false, &block)
@@ -28,6 +34,9 @@ module Chamomile
       block.call if block_given?
       _layout_stack.pop
       _layout_stack.empty? ? widget : (_layout_stack.last.add(widget) && nil)
+    rescue StandardError
+      _layout_stack.pop
+      raise
     end
 
     def text(content, **opts)
