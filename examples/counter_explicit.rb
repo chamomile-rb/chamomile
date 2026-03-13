@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Counter — explicit Flourish style
+# Counter — explicit Chamomile style
 # Run: ruby examples/counter_explicit.rb
 # Compare: examples/counter_dsl.rb (same output, DSL API)
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class Counter
   include Chamomile::Application
@@ -27,13 +27,13 @@ class Counter
   end
 
   def view
-    header = Flourish::Style.new.bold.foreground("#7d56f4").render("Counter")
+    header = Chamomile::Style.new.bold.foreground("#7d56f4").render("Counter")
     count  = "Count:   #{@count}"
     uptime = "Uptime:  #{@seconds}s"
-    bar    = Flourish::Style.new.foreground("#666666").render(
+    bar    = Chamomile::Style.new.foreground("#666666").render(
                "up/k  increment  |  down/j  decrement  |  r  reset  |  q  quit"
              )
-    Flourish.vertical([header, "", count, uptime, "", bar], align: :left)
+    Chamomile.vertical([header, "", count, uptime, "", bar], align: :left)
   end
 end
 

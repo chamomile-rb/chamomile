@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Item List — explicit Flourish style
+# Item List — explicit Chamomile style
 # Run: ruby examples/list_explicit.rb
 # Compare: examples/list_dsl.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class ItemList
   include Chamomile::Application
@@ -29,14 +29,14 @@ class ItemList
   on_key("q") { quit }
 
   def view
-    header = Flourish::Style.new.bold.render("Pick some items:")
+    header = Chamomile::Style.new.bold.render("Pick some items:")
     items = ITEMS.each_with_index.map do |item, i|
       cursor  = @cursor == i ? ">" : " "
       checked = @selected[i] ? "x" : " "
       "#{cursor} [#{checked}] #{item}"
     end
-    bar = Flourish::Style.new.foreground("#666666").render("Space/Enter to select, q to quit")
-    Flourish.vertical([header, "", *items, "", bar], align: :left)
+    bar = Chamomile::Style.new.foreground("#666666").render("Space/Enter to select, q to quit")
+    Chamomile.vertical([header, "", *items, "", bar], align: :left)
   end
 end
 

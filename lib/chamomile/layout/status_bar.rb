@@ -9,7 +9,7 @@ module Chamomile
       end
 
       def render(width:, height:)
-        Flourish::Style.new
+        Chamomile::Style.new
           .foreground(@color)
           .width(width)
           .render(@content)

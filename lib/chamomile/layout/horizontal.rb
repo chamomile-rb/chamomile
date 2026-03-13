@@ -27,7 +27,7 @@ module Chamomile
           child.render(width: w, height: height)
         end
 
-        Flourish.horizontal(parts, align: @align)
+        Chamomile.horizontal(parts, align: @align)
       end
     end
   end

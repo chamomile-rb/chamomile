@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Mouse Tracker — explicit Flourish style
+# Mouse Tracker — explicit Chamomile style
 # Run: ruby examples/mouse_explicit.rb
 # Compare: examples/mouse_dsl.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class MouseTracker
   include Chamomile::Application
@@ -29,11 +29,11 @@ class MouseTracker
   }
 
   def view
-    header = Flourish::Style.new.bold.foreground("#7d56f4").render("Mouse Tracker")
-    bar    = Flourish::Style.new.foreground("#666666").render(
+    header = Chamomile::Style.new.bold.foreground("#7d56f4").render("Mouse Tracker")
+    bar    = Chamomile::Style.new.foreground("#666666").render(
                "Move your mouse, click, or scroll. Press q to quit."
              )
-    Flourish.vertical([
+    Chamomile.vertical([
       header, "",
       "Position: (#{@x}, #{@y})",
       "Button:   #{@button}",

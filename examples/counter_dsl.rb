@@ -2,10 +2,10 @@
 
 # Counter — DSL style
 # Run: ruby examples/counter_dsl.rb
-# Compare: examples/counter_explicit.rb (same output, explicit Flourish API)
+# Compare: examples/counter_explicit.rb (same output, explicit Chamomile API)
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class Counter
   include Chamomile::Application

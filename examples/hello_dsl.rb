@@ -5,7 +5,7 @@
 # Compare: examples/hello_explicit.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class Hello
   include Chamomile::Application

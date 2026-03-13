@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Editor Launcher — explicit Flourish style
+# Editor Launcher — explicit Chamomile style
 # Run: ruby examples/exec_explicit.rb
 # Compare: examples/exec_dsl.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 require "tempfile"
 
 class EditorLauncher
@@ -26,13 +26,13 @@ class EditorLauncher
   }
 
   def view
-    header = Flourish::Style.new.bold.foreground("#7d56f4").render("Editor Launcher")
+    header = Chamomile::Style.new.bold.foreground("#7d56f4").render("Editor Launcher")
     body = if @launched
              "Editor was launched for: #{@file.path}\nPress e to edit again, q to quit."
            else
              "Press e to launch $EDITOR\nPress q to quit."
            end
-    Flourish.vertical([header, "", body], align: :left)
+    Chamomile.vertical([header, "", body], align: :left)
   end
 end
 

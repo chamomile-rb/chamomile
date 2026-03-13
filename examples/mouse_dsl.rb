@@ -5,7 +5,7 @@
 # Compare: examples/mouse_explicit.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class MouseTracker
   include Chamomile::Application

@@ -121,8 +121,8 @@ RSpec.describe "ViewDSL" do
   end
 
   describe "mixed DSL + raw" do
-    it "raw(flourish_string) inside vertical works" do
-      header = Flourish::Style.new.bold.foreground("#7d56f4").render("Title")
+    it "raw(styled_string) inside vertical works" do
+      header = Chamomile::Style.new.bold.foreground("#7d56f4").render("Title")
       result = app.vertical(align: :left) do
         app.raw(header)
         app.text("body")

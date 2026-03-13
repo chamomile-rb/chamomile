@@ -15,7 +15,7 @@ module Chamomile
       end
 
       def render(width:, height:)
-        style = Flourish::Style.new
+        style = Chamomile::Style.new
         style = style.bold             if @bold
         style = style.italic           if @italic
         style = style.faint            if @dim

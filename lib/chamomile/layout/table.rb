@@ -10,7 +10,7 @@ module Chamomile
       end
 
       def render(width:, height:)
-        if @data.is_a?(Petals::Table)
+        if @data.is_a?(Chamomile::Table)
           @data.view
         else
           table = build_table(width)
@@ -22,7 +22,7 @@ module Chamomile
 
       def build_table(available_width)
         cols = @columns || auto_columns(available_width)
-        Petals::Table.new(rows: @data) do |t|
+        Chamomile::Table.new(rows: @data) do |t|
           cols.each { |c| t.column c[:title], width: c[:width] }
         end
       end

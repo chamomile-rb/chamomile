@@ -5,10 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-03-12
 
 ### Added
 
+- **Styling** (merged from Flourish): `Chamomile::Style`, `Chamomile::Border`, `Chamomile::Color`, `Chamomile::ColorProfile`, `Chamomile::ANSI`, `Chamomile::Wrap`, `Chamomile::Align`, `Chamomile::Join`, `Chamomile::Place`
+- **Components** (merged from Petals): `Chamomile::TextInput`, `Chamomile::TextArea`, `Chamomile::Table`, `Chamomile::List`, `Chamomile::Viewport`, `Chamomile::Spinner`, `Chamomile::Progress`, `Chamomile::Timer`, `Chamomile::Stopwatch`, `Chamomile::Paginator`, `Chamomile::Cursor`, `Chamomile::Help`, `Chamomile::FilePicker`, `Chamomile::KeyBinding`, `Chamomile::LogView`, `Chamomile::CommandPalette`, `Chamomile::RenderCache`
+- Position constants: `Chamomile::TOP`, `LEFT`, `CENTER`, `BOTTOM`, `RIGHT`
+- Module-level helpers: `Chamomile.width`, `.height`, `.size`, `.horizontal`, `.vertical`, `.place`
+- Backward-compatible shims: `require "flourish"` and `require "petals"` still work (with deprecation warning)
 - `Chamomile::Application` — single mixin that includes both Model and Commands
 - Declarative callback DSL: `on_key`, `on_resize`, `on_tick`, `on_mouse`, `on_focus`, `on_blur`, `on_paste`
 - `on_start` lifecycle hook — imperative alternative to `start` returning a command

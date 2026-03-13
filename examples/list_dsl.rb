@@ -5,7 +5,7 @@
 # Compare: examples/list_explicit.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class ItemList
   include Chamomile::Application

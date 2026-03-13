@@ -5,7 +5,7 @@
 # Compare: examples/inline_explicit.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class InlineSpinner
   include Chamomile::Application

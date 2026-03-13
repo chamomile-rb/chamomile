@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Hello — explicit Flourish style
+# Hello — explicit Chamomile style
 # Run: ruby examples/hello_explicit.rb
 # Compare: examples/hello_dsl.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class Hello
   include Chamomile::Application
@@ -13,8 +13,8 @@ class Hello
   on_key("q") { quit }
 
   def view
-    header = Flourish::Style.new.bold.foreground("#7d56f4").render("Hello from Chamomile!")
-    Flourish.vertical([header, "", "Press q to quit."], align: :left)
+    header = Chamomile::Style.new.bold.foreground("#7d56f4").render("Hello from Chamomile!")
+    Chamomile.vertical([header, "", "Press q to quit."], align: :left)
   end
 end
 

@@ -7,11 +7,11 @@ module Chamomile
 
       def self.border_map
         @border_map ||= {
-          rounded: Flourish::Border::ROUNDED,
-          normal:  Flourish::Border::NORMAL,
-          thick:   Flourish::Border::THICK,
-          double:  Flourish::Border::DOUBLE,
-          ascii:   Flourish::Border::ASCII,
+          rounded: Chamomile::Border::ROUNDED,
+          normal:  Chamomile::Border::NORMAL,
+          thick:   Chamomile::Border::THICK,
+          double:  Chamomile::Border::DOUBLE,
+          ascii:   Chamomile::Border::ASCII,
           none:    nil,
         }.freeze
       end
@@ -51,12 +51,12 @@ module Chamomile
 
         inner_content = @children.map { |c| c.render(width: inner_width, height: inner_height) }.join("\n")
 
-        style = Flourish::Style.new
+        style = Chamomile::Style.new
           .width(my_width)
           .height(height)
           .border_foreground(@color)
 
-        border_preset = self.class.border_map[@border] || Flourish::Border::ROUNDED
+        border_preset = self.class.border_map[@border] || Chamomile::Border::ROUNDED
         style = style.border(border_preset) if border_preset
 
         if @title && border_preset
@@ -72,7 +72,7 @@ module Chamomile
       def inject_title(rendered, title, color)
         lines = rendered.split("\n", -1)
         return rendered if lines.empty?
-        styled_title = Flourish::Style.new.foreground(color).render(" #{title} ")
+        styled_title = Chamomile::Style.new.foreground(color).render(" #{title} ")
         lines[0] = lines[0].sub(/─{2,}/, "─#{styled_title}─")
         lines.join("\n")
       end

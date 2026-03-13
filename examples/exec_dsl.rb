@@ -5,7 +5,7 @@
 # Compare: examples/exec_explicit.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 require "tempfile"
 
 class EditorLauncher

@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-# Inline Spinner — explicit Flourish style
+# Inline Spinner — explicit Chamomile style
 # Run: ruby examples/inline_explicit.rb
 # Compare: examples/inline_dsl.rb
 
 require_relative "../lib/chamomile"
-require "flourish"
+# (styling is included in chamomile)
 
 class InlineSpinner
   include Chamomile::Application
@@ -40,7 +40,7 @@ class InlineSpinner
     empty = bar_width - filled
     bar = "#{"=" * filled}#{" " * empty}"
 
-    Flourish.vertical([
+    Chamomile.vertical([
       "#{spinner} Processing... #{@progress}%",
       "[#{bar}]",
       "Press q to cancel."

@@ -19,9 +19,9 @@ module Chamomile
         lines = visible_items.each_with_index.map do |item, i|
           text = item.to_s.ljust(width)
           if i == @cursor
-            Flourish::Style.new.foreground(@selected_color).reverse.render(text)
+            Chamomile::Style.new.foreground(@selected_color).reverse.render(text)
           else
-            Flourish::Style.new.foreground(@dim_color).render(text)
+            Chamomile::Style.new.foreground(@dim_color).render(text)
           end
         end
 
