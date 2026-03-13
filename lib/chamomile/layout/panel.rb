@@ -8,11 +8,11 @@ module Chamomile
       def self.border_map
         @border_map ||= {
           rounded: Chamomile::Border::ROUNDED,
-          normal:  Chamomile::Border::NORMAL,
-          thick:   Chamomile::Border::THICK,
-          double:  Chamomile::Border::DOUBLE,
-          ascii:   Chamomile::Border::ASCII,
-          none:    nil,
+          normal: Chamomile::Border::NORMAL,
+          thick: Chamomile::Border::THICK,
+          double: Chamomile::Border::DOUBLE,
+          ascii: Chamomile::Border::ASCII,
+          none: nil,
         }.freeze
       end
 
@@ -36,6 +36,7 @@ module Chamomile
 
       def resolved_width(available_width)
         return available_width unless @width
+
         if @width.is_a?(String) && @width.end_with?("%")
           pct = @width.to_f / 100.0
           (available_width * pct).to_i
@@ -52,9 +53,9 @@ module Chamomile
         inner_content = @children.map { |c| c.render(width: inner_width, height: inner_height) }.join("\n")
 
         style = Chamomile::Style.new
-          .width(my_width)
-          .height(height)
-          .border_foreground(@color)
+                                .width(my_width)
+                                .height(height)
+                                .border_foreground(@color)
 
         border_preset = self.class.border_map[@border] || Chamomile::Border::ROUNDED
         style = style.border(border_preset) if border_preset
@@ -72,6 +73,7 @@ module Chamomile
       def inject_title(rendered, title, color)
         lines = rendered.split("\n", -1)
         return rendered if lines.empty?
+
         styled_title = Chamomile::Style.new.foreground(color).render(" #{title} ")
         lines[0] = lines[0].sub(/─{2,}/, "─#{styled_title}─")
         lines.join("\n")

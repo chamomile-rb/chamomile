@@ -16,7 +16,10 @@ RSpec.describe Chamomile::Router do
       end
 
       keymap do |km|
-        km.bind("s") { @started = true; nil }
+        km.bind("s") do
+          @started = true
+          nil
+        end
       end
     end
 
@@ -70,8 +73,14 @@ RSpec.describe Chamomile::Router do
       attr_accessor :action
 
       keymap do |km|
-        km.bind("s") { @action = :start; nil }
-        km.bind("S") { @action = :stop; nil }
+        km.bind("s") do
+          @action = :start
+          nil
+        end
+        km.bind("S") do
+          @action = :stop
+          nil
+        end
       end
     end
 

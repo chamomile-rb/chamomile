@@ -37,13 +37,15 @@ Metrics/CyclomaticComplexity:
 Metrics/PerceivedComplexity:
   Max: 40
 
-# Options constructor has many keyword args
+# Options constructor has many keyword args; place() supports old + new API forms
 Metrics/ParameterLists:
   Max: 15
+  MaxOptionalParameters: 5
 
-# Short names like w, h, e are clear in context (resize, rescue, etc.)
+# Short names like w, h, e, bc are clear in context (resize, rescue, border chars, etc.)
 Naming/MethodParameterName:
   AllowedNames:
+    - bc
     - n
     - p
     - v
@@ -74,13 +76,27 @@ Naming/MethodParameterName:
 Style/FormatStringToken:
   Enabled: false
 
-# Examples, tests, and styling modules are informal — relax documentation requirement
+# Examples, tests, layout nodes, styling/component modules, and internal mixins are informal
 Style/Documentation:
   Exclude:
     - 'spec/**/*'
     - 'examples/**/*'
     - 'tests/**/*'
     - 'lib/chamomile/styling/**/*'
+    - 'lib/chamomile/components/**/*'
+    - 'lib/chamomile/layout/**/*'
+    - 'lib/chamomile/application.rb'
+
+# Layout nodes override initialize without calling super (Data.define subclasses)
+Lint/MissingSuper:
+  Exclude:
+    - 'lib/chamomile/layout/**/*'
+
+# Layout node handle methods accept msg for protocol consistency; frame render accepts height for API uniformity
+Lint/UnusedMethodArgument:
+  Exclude:
+    - 'lib/chamomile/layout/**/*'
+    - 'lib/chamomile/frame.rb'
 
 # Style methods use boolean defaults for fluent API (e.g. .bold, .bold(true), .bold(false))
 Style/OptionalBooleanParameter:
@@ -109,10 +125,11 @@ Naming/AccessorMethodName:
     - 'lib/chamomile/components/progress.rb'
     - 'lib/chamomile/components/viewport.rb'
 
-# Table normalize_columns has an expected pass-through branch
+# Table normalize_columns and frame resolve_border have expected pass-through branches
 Lint/DuplicateBranch:
   Exclude:
     - 'lib/chamomile/components/table.rb'
+    - 'lib/chamomile/frame.rb'
 
 # We use -> for all lambdas (single and multiline) for consistency
 Style/Lambda:

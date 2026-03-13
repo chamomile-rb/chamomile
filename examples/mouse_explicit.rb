@@ -20,27 +20,27 @@ class MouseTracker
 
   on_key("q") { quit }
 
-  on_mouse { |e|
+  on_mouse do |e|
     @x = e.x
     @y = e.y
     @button = e.button.to_s
     @action = e.action.to_s
     @events += 1
-  }
+  end
 
   def view
     header = Chamomile::Style.new.bold.foreground("#7d56f4").render("Mouse Tracker")
     bar    = Chamomile::Style.new.foreground("#666666").render(
-               "Move your mouse, click, or scroll. Press q to quit."
-             )
+      "Move your mouse, click, or scroll. Press q to quit."
+    )
     Chamomile.vertical([
-      header, "",
-      "Position: (#{@x}, #{@y})",
-      "Button:   #{@button}",
-      "Action:   #{@action}",
-      "Events:   #{@events}",
-      "", bar
-    ], align: :left)
+                         header, "",
+                         "Position: (#{@x}, #{@y})",
+                         "Button:   #{@button}",
+                         "Action:   #{@action}",
+                         "Events:   #{@events}",
+                         "", bar,
+                       ], align: :left)
   end
 end
 

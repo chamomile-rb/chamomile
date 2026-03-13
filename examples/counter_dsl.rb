@@ -20,7 +20,10 @@ class Counter
   on_key("r")        { @count = 0 }
   on_key("q")        { quit }
 
-  on_tick { @seconds += 1; tick(1.0) }
+  on_tick do
+    @seconds += 1
+    tick(1.0)
+  end
 
   def on_start
     tick(1.0)

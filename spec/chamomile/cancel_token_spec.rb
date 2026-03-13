@@ -33,7 +33,7 @@ RSpec.describe "Chamomile::Commands cancellation" do
     end
 
     it "executes the block when not cancelled" do
-      token, cmd = cancellable { |_token| Chamomile::TickMsg.new(time: Time.now) }
+      _, cmd = cancellable { |_token| Chamomile::TickMsg.new(time: Time.now) }
       result = cmd.call
       expect(result).to be_a(Chamomile::TickMsg)
     end
@@ -46,7 +46,10 @@ RSpec.describe "Chamomile::Commands cancellation" do
 
     it "passes the token to the block for cooperative checking" do
       received_token = nil
-      token, cmd = cancellable { |t| received_token = t; nil }
+      token, cmd = cancellable do |t|
+        received_token = t
+        nil
+      end
       cmd.call
       expect(received_token).to eq(token)
     end
@@ -98,7 +101,7 @@ RSpec.describe "Chamomile::Commands deliver and map" do
   describe "#map" do
     it "transforms a command's result" do
       inner = -> { Chamomile::TickMsg.new(time: Time.now) }
-      mapped = map(inner) { |result| Chamomile::KeyMsg.new(key: "mapped", mod: []) }
+      mapped = map(inner) { |_result| Chamomile::KeyMsg.new(key: "mapped", mod: []) }
       result = mapped.call
       expect(result).to be_a(Chamomile::KeyMsg)
       expect(result.key).to eq("mapped")
@@ -109,8 +112,8 @@ RSpec.describe "Chamomile::Commands deliver and map" do
     end
 
     it "returns nil when inner command returns nil" do
-      inner = -> { nil }
-      mapped = map(inner) { |result| Chamomile::TickMsg.new(time: Time.now) }
+      inner = -> {}
+      mapped = map(inner) { |_result| Chamomile::TickMsg.new(time: Time.now) }
       expect(mapped.call).to be_nil
     end
   end

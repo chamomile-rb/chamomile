@@ -29,6 +29,7 @@ module Chamomile
 
       def auto_columns(available_width)
         return [] if @data.empty? || @data.first.empty?
+
         col_count  = @data.first.size
         col_width  = [available_width / col_count, 8].max
         col_count.times.map { |i| { title: "col#{i + 1}", width: col_width } }

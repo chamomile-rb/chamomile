@@ -7,9 +7,9 @@ RSpec.describe Chamomile::Application do
     it "registers and fires handler for a single key" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @hit = false; end
+        def initialize = @hit = false
         on_key("a") { @hit = true }
-        def view; @hit ? "hit" : "miss"; end
+        def view = @hit ? "hit" : "miss"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -20,9 +20,9 @@ RSpec.describe Chamomile::Application do
     it "registers handler for multiple keys in one call" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @count = 0; end
+        def initialize = @count = 0
         on_key(:up, "k") { @count += 1 }
-        def view; @count.to_s; end
+        def view = @count.to_s
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -34,9 +34,9 @@ RSpec.describe Chamomile::Application do
     it "block has access to instance variables" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @name = "world"; end
+        def initialize = @name = "world"
         on_key("g") { @name = "ruby" }
-        def view; "hello #{@name}"; end
+        def view = "hello #{@name}"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -48,7 +48,7 @@ RSpec.describe Chamomile::Application do
       klass = Class.new do
         include Chamomile::Application
         on_key("q") { quit }
-        def view; "alive"; end
+        def view = "alive"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -59,9 +59,9 @@ RSpec.describe Chamomile::Application do
     it "does not fire handler for unregistered keys" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @hit = false; end
+        def initialize = @hit = false
         on_key("a") { @hit = true }
-        def view; @hit ? "hit" : "miss"; end
+        def view = @hit ? "hit" : "miss"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -74,9 +74,15 @@ RSpec.describe Chamomile::Application do
     it "receives event with width and height" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @w = 0; @h = 0; end
-        on_resize { |e| @w = e.width; @h = e.height }
-        def view; "#{@w}x#{@h}"; end
+        def initialize
+          @w = 0
+          @h = 0
+        end
+        on_resize do |e|
+          @w = e.width
+          @h = e.height
+        end
+        def view = "#{@w}x#{@h}"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -91,9 +97,9 @@ RSpec.describe Chamomile::Application do
     it "fires on tick events" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @ticks = 0; end
+        def initialize = @ticks = 0
         on_tick { @ticks += 1 }
-        def view; @ticks.to_s; end
+        def view = @ticks.to_s
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -106,9 +112,9 @@ RSpec.describe Chamomile::Application do
     it "receives mouse event" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @clicked = false; end
+        def initialize = @clicked = false
         on_mouse { |e| @clicked = true if e.press? }
-        def view; @clicked ? "clicked" : "waiting"; end
+        def view = @clicked ? "clicked" : "waiting"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -121,10 +127,10 @@ RSpec.describe Chamomile::Application do
     it "fires on focus and blur events" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @focused = false; end
+        def initialize = @focused = false
         on_focus { @focused = true }
         on_blur { @focused = false }
-        def view; @focused ? "focused" : "blurred"; end
+        def view = @focused ? "focused" : "blurred"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -139,9 +145,9 @@ RSpec.describe Chamomile::Application do
     it "receives paste content" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @pasted = ""; end
+        def initialize = @pasted = ""
         on_paste { |e| @pasted = e.content }
-        def view; @pasted; end
+        def view = @pasted
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -154,7 +160,7 @@ RSpec.describe Chamomile::Application do
     it "ignores DSL handlers when update is defined" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @source = "none"; end
+        def initialize = @source = "none"
         on_key("a") { @source = "dsl" }
 
         def update(msg)
@@ -162,7 +168,7 @@ RSpec.describe Chamomile::Application do
           nil
         end
 
-        def view; @source; end
+        def view = @source
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -175,9 +181,9 @@ RSpec.describe Chamomile::Application do
     it "subclass inherits parent handlers" do
       parent = Class.new do
         include Chamomile::Application
-        def initialize; @count = 0; end
+        def initialize = @count = 0
         on_key("a") { @count += 1 }
-        def view; @count.to_s; end
+        def view = @count.to_s
       end
 
       child = Class.new(parent)
@@ -193,7 +199,7 @@ RSpec.describe Chamomile::Application do
       klass = Class.new do
         include Chamomile::Application
 
-        def initialize; @started = false; end
+        def initialize = @started = false
 
         def on_start
           deliver(Chamomile::TickEvent.new(time: Time.now))
@@ -201,7 +207,7 @@ RSpec.describe Chamomile::Application do
 
         on_tick { @started = true }
 
-        def view; @started ? "started" : "waiting"; end
+        def view = @started ? "started" : "waiting"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -213,14 +219,14 @@ RSpec.describe Chamomile::Application do
     it "fires on program start" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @started = false; end
+        def initialize = @started = false
 
         def on_start
           deliver(Chamomile::TickEvent.new(time: Time.now))
         end
 
         on_tick { @started = true }
-        def view; @started ? "started" : "waiting"; end
+        def view = @started ? "started" : "waiting"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)

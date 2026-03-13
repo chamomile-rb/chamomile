@@ -5,7 +5,7 @@ module Chamomile
   # Included by Application — all methods run in the model's own context,
   # so @ivars, quit, tick, etc. work naturally.
   module ViewDSL
-    def vertical(align: :left, &block)
+    def vertical(align: :left)
       layout = Layout::Vertical.new(align: align)
       _layout_stack.push(layout)
       yield
@@ -16,7 +16,7 @@ module Chamomile
       raise
     end
 
-    def horizontal(align: :top, &block)
+    def horizontal(align: :top)
       layout = Layout::Horizontal.new(align: align)
       _layout_stack.push(layout)
       yield
@@ -39,24 +39,24 @@ module Chamomile
       raise
     end
 
-    def text(content, **opts)
-      _add_to_stack(Layout::Text.new(content, **opts))
+    def text(content, **)
+      _add_to_stack(Layout::Text.new(content, **))
     end
 
-    def list(items, **opts)
-      _add_to_stack(Layout::List.new(items, **opts))
+    def list(items, **)
+      _add_to_stack(Layout::List.new(items, **))
     end
 
-    def table(data, **opts)
-      _add_to_stack(Layout::Table.new(data, **opts))
+    def table(data, **)
+      _add_to_stack(Layout::Table.new(data, **))
     end
 
-    def status_bar(content, **opts)
-      _add_to_stack(Layout::StatusBar.new(content, **opts))
+    def status_bar(content, **)
+      _add_to_stack(Layout::StatusBar.new(content, **))
     end
 
-    def spinner(**opts)
-      _add_to_stack(Layout::Spinner.new(**opts))
+    def spinner(**)
+      _add_to_stack(Layout::Spinner.new(**))
     end
 
     def raw(string)

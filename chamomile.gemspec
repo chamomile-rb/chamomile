@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Chamomile Contributors"]
   spec.summary       = "The complete Ruby TUI framework — core, styling, and components"
   spec.description   = "Build beautiful terminal applications with an event-driven architecture, " \
-                        "terminal styling (borders, colors, layout), and reusable components " \
-                        "(text inputs, tables, lists, spinners, and more)"
+                       "terminal styling (borders, colors, layout), and reusable components " \
+                       "(text inputs, tables, lists, spinners, and more)"
   spec.license       = "MIT"
   spec.require_paths = ["lib"]
   spec.files         = Dir["lib/**/*.rb"]

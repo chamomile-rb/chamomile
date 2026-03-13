@@ -19,11 +19,11 @@ class EditorLauncher
   end
 
   on_key("q") { quit }
-  on_key("e") {
+  on_key("e") do
     @launched = true
     editor = ENV["EDITOR"] || "vi"
     exec(editor, @file.path)
-  }
+  end
 
   def view
     vertical(align: :left) do

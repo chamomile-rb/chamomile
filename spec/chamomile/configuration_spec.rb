@@ -32,8 +32,8 @@ RSpec.describe Chamomile::Configuration do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def view; ""; end
-        def start; quit; end
+        def view = ""
+        def start = quit
       end.new
 
       # We can't easily test the full run loop, but we can verify
@@ -59,8 +59,8 @@ RSpec.describe Chamomile::Configuration do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def view; ""; end
-        def start; quit; end
+        def view = ""
+        def start = quit
       end.new
 
       config_received = nil
@@ -80,8 +80,8 @@ RSpec.describe Chamomile::Configuration do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
-        def view; ""; end
-        def start; quit; end
+        def view = ""
+        def start = quit
       end.new
 
       config_received = nil

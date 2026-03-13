@@ -14,13 +14,13 @@ class ItemList
 
   on_key(:up, "k")   { @cursor = [@cursor - 1, 0].max }
   on_key(:down, "j") { @cursor = [@cursor + 1, ITEMS.size - 1].min }
-  on_key(" ", :enter) {
+  on_key(" ", :enter) do
     if @selected[@cursor]
       @selected.delete(@cursor)
     else
       @selected[@cursor] = true
     end
-  }
+  end
   on_key("q") { quit }
 
   def view

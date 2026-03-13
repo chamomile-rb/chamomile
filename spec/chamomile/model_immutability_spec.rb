@@ -96,7 +96,6 @@ RSpec.describe "Chamomile::Model immutability" do
         include Chamomile::Model
         frozen_model!
 
-        def initialize; end
         def update(_msg) = nil
       end
 

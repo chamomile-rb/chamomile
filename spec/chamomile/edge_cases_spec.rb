@@ -7,9 +7,12 @@ RSpec.describe "edge cases" do
     it "quit works when it is the last expression" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @cleaned = false; end
-        on_key("q") { @cleaned = true; quit }
-        def view; @cleaned ? "cleaned" : "not cleaned"; end
+        def initialize = @cleaned = false
+        on_key("q") do
+          @cleaned = true
+          quit
+        end
+        def view = @cleaned ? "cleaned" : "not cleaned"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -21,23 +24,23 @@ RSpec.describe "edge cases" do
     it "non-callable return values are ignored (no crash)" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @count = 0; end
-        on_key("a") { @count += 1 }  # returns Integer, not a command
-        def view; @count.to_s; end
+        def initialize = @count = 0
+        on_key("a") { @count += 1 } # returns Integer, not a command
+        def view = @count.to_s
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
       harness.send_key("a")
-      expect(harness.view).to eq("1")  # no crash, state updated
+      expect(harness.view).to eq("1") # no crash, state updated
     end
 
     it "tick command works when returned from handler" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @ticks = 0; end
+        def initialize = @ticks = 0
         on_key("t") { tick(0.001) }
         on_tick { @ticks += 1 }
-        def view; @ticks.to_s; end
+        def view = @ticks.to_s
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -51,7 +54,7 @@ RSpec.describe "edge cases" do
     it "returns nil (no crash)" do
       klass = Class.new do
         include Chamomile::Application
-        def view; "empty"; end
+        def view = "empty"
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -65,7 +68,7 @@ RSpec.describe "edge cases" do
       klass = Class.new do
         include Chamomile::Application
         on_key("x") { raise "boom" }
-        def view; ""; end
+        def view = ""
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)
@@ -77,9 +80,9 @@ RSpec.describe "edge cases" do
     it "works when on_start is private" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @started = false; end
+        def initialize = @started = false
         on_tick { @started = true }
-        def view; @started ? "started" : "waiting"; end
+        def view = @started ? "started" : "waiting"
 
         private
 
@@ -111,10 +114,10 @@ RSpec.describe "edge cases" do
     it "last registration wins" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @value = "none"; end
+        def initialize = @value = "none"
         on_key("a") { @value = "first" }
         on_key("a") { @value = "second" }
-        def view; @value; end
+        def view = @value
       end
 
       harness = Chamomile::Testing::Harness.new(klass.new)

@@ -15,6 +15,7 @@ module Chamomile
 
       def render(width:, height:)
         return "" if @children.empty?
+
         parts = @children.map { |c| c.render(width: width, height: height) }
         Chamomile.vertical(parts, align: @align)
       end

@@ -160,7 +160,7 @@ RSpec.describe "ViewDSL" do
     it "no state leak between views" do
       klass = Class.new do
         include Chamomile::Application
-        def initialize; @count = 0; end
+        def initialize = @count = 0
 
         def view
           @count += 1

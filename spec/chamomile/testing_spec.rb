@@ -68,7 +68,7 @@ RSpec.describe Chamomile::Testing::Harness do
         def view = "test"
       end.new
 
-      harness = described_class.new(model)
+      described_class.new(model)
       expect(model.started).to be true
     end
   end
@@ -197,7 +197,7 @@ RSpec.describe Chamomile::Testing::Harness do
         def view = "test"
       end.new
 
-      harness = described_class.new(model)
+      described_class.new(model)
       expect(model.values.length).to eq(2)
     end
   end
@@ -213,8 +213,14 @@ RSpec.describe Chamomile::Testing::Harness do
 
         def start
           sequence(
-            -> { order << 1; Chamomile::TickMsg.new(time: Time.now) },
-            -> { order << 2; Chamomile::TickMsg.new(time: Time.now) }
+            -> {
+              order << 1
+              Chamomile::TickMsg.new(time: Time.now)
+            },
+            -> {
+              order << 2
+              Chamomile::TickMsg.new(time: Time.now)
+            }
           )
         end
 

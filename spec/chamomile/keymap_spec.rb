@@ -63,8 +63,8 @@ RSpec.describe Chamomile::Keymap do
 
     it "supports chaining" do
       km = described_class.new
-              .bind("j") { @value += 1 }
-              .bind("k") { @value -= 1 }
+                          .bind("j") { @value += 1 }
+                          .bind("k") { @value -= 1 }
 
       km.handle(key_msg("j"), model)
       expect(model.value).to eq(1)
@@ -93,9 +93,9 @@ RSpec.describe Chamomile::Keymap do
   describe "#only" do
     it "applies guard to all bindings in the block" do
       km = described_class.new
-              .only(->(m) { m.value < 5 }) do |sub|
-                sub.bind("j") { @value += 1 }
-              end
+                          .only(->(m) { m.value < 5 }) do |sub|
+        sub.bind("j") { @value += 1 }
+      end
 
       5.times { km.handle(key_msg("j"), model) }
       expect(model.value).to eq(5)
@@ -107,9 +107,9 @@ RSpec.describe Chamomile::Keymap do
 
     it "combines nested guards" do
       km = described_class.new
-              .only(->(m) { m.value < 10 }) do |sub|
-                sub.bind("j", guard: ->(m) { m.value.even? }) { @value += 1 }
-              end
+                          .only(->(m) { m.value < 10 }) do |sub|
+        sub.bind("j", guard: ->(m) { m.value.even? }) { @value += 1 }
+      end
 
       km.handle(key_msg("j"), model) # value=0 (even) -> 1
       expect(model.value).to eq(1)
@@ -128,8 +128,8 @@ RSpec.describe Chamomile::Keymap do
   describe "first match wins" do
     it "uses the first matching binding" do
       km = described_class.new
-              .bind("q") { @value = 1 }
-              .bind("q") { @value = 2 }
+                          .bind("q") { @value = 1 }
+                          .bind("q") { @value = 2 }
 
       km.handle(key_msg("q"), model)
       expect(model.value).to eq(1)

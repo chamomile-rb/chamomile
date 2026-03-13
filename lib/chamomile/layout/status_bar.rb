@@ -10,9 +10,9 @@ module Chamomile
 
       def render(width:, height:)
         Chamomile::Style.new
-          .foreground(@color)
-          .width(width)
-          .render(@content)
+                        .foreground(@color)
+                        .width(width)
+                        .render(@content)
       end
     end
   end

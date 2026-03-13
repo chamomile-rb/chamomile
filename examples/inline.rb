@@ -15,7 +15,7 @@ class InlineSpinner
   on_key("q") { quit }
   on_key(:ctrl_c) { quit }
 
-  on_tick {
+  on_tick do
     @frame = (@frame + 1) % FRAMES.length
     @progress = [@progress + 1, 100].min
     if @progress >= 100
@@ -23,7 +23,7 @@ class InlineSpinner
     else
       tick(0.1)
     end
-  }
+  end
 
   def on_start
     tick(0.1)

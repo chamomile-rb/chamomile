@@ -18,7 +18,7 @@ module Chamomile
 
     def self.build(&block)
       frame = new
-      block.call(frame) if block
+      block&.call(frame)
       frame
     end
 
@@ -29,7 +29,7 @@ module Chamomile
     # Add a vertical layout container.
     def vertical(&block)
       layout = Widgets::VerticalLayout.new
-      block.call(layout) if block
+      block&.call(layout)
       @children << layout
       layout
     end
@@ -37,7 +37,7 @@ module Chamomile
     # Add a horizontal layout container.
     def horizontal(&block)
       layout = Widgets::HorizontalLayout.new
-      block.call(layout) if block
+      block&.call(layout)
       @children << layout
       layout
     end
@@ -45,7 +45,7 @@ module Chamomile
     # Add a bordered panel with a title.
     def panel(title = nil, border: :rounded, width: nil, &block)
       p = Widgets::Panel.new(title: title, border: border, width: width)
-      block.call(p) if block
+      block&.call(p)
       @children << p
       p
     end
@@ -138,13 +138,11 @@ module Chamomile
 
         # Pad or truncate to inner height
         content_lines = content_lines[0, inner_h] if content_lines.length > inner_h
-        while content_lines.length < inner_h
-          content_lines << ""
-        end
+        content_lines << "" while content_lines.length < inner_h
 
         border_chars = resolve_border
         top_line = build_top(border_chars, inner_w)
-        bottom_line = "#{border_chars[:bl]}#{"#{border_chars[:h]}" * inner_w}#{border_chars[:br]}"
+        bottom_line = "#{border_chars[:bl]}#{border_chars[:h].to_s * inner_w}#{border_chars[:br]}"
 
         body = content_lines.map do |line|
           padded = line.length < inner_w ? "#{line}#{" " * (inner_w - line.length)}" : line[0, inner_w]
@@ -160,9 +158,9 @@ module Chamomile
         if @title && !@title.empty?
           title_text = " #{@title} "
           bar_remaining = [inner_w - title_text.length, 0].max
-          "#{bc[:tl]}#{title_text}#{"#{bc[:h]}" * bar_remaining}#{bc[:tr]}"
+          "#{bc[:tl]}#{title_text}#{bc[:h].to_s * bar_remaining}#{bc[:tr]}"
         else
-          "#{bc[:tl]}#{"#{bc[:h]}" * inner_w}#{bc[:tr]}"
+          "#{bc[:tl]}#{bc[:h].to_s * inner_w}#{bc[:tr]}"
         end
       end
 
@@ -192,7 +190,7 @@ module Chamomile
 
       def panel(title = nil, border: :rounded, width: nil, &block)
         p = Panel.new(title: title, border: border, width: width)
-        block.call(p) if block
+        block&.call(p)
         @children << p
         p
       end
@@ -230,7 +228,7 @@ module Chamomile
 
       def panel(title = nil, border: :rounded, width: nil, &block)
         p = Panel.new(title: title, border: border, width: width)
-        block.call(p) if block
+        block&.call(p)
         @children << p
         p
       end
@@ -243,7 +241,7 @@ module Chamomile
 
       def horizontal(&block)
         layout = HorizontalLayout.new
-        block.call(layout) if block
+        block&.call(layout)
         @children << layout
         layout
       end
@@ -279,8 +277,7 @@ module Chamomile
       end
 
       def render(width: 80, height: 1)
-        line = @content.length > width ? @content[0, width] : @content
-        line
+        @content.length > width ? @content[0, width] : @content
       end
     end
   end

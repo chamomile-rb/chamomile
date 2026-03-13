@@ -20,13 +20,13 @@ class MouseTracker
 
   on_key("q") { quit }
 
-  on_mouse { |e|
+  on_mouse do |e|
     @x = e.x
     @y = e.y
     @button = e.button.to_s
     @action = e.action.to_s
     @events += 1
-  }
+  end
 
   def view
     vertical(align: :left) do
