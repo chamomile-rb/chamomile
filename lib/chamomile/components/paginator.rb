@@ -70,7 +70,7 @@ module Chamomile
       @page = @page.clamp(0, @total_pages - 1)
     end
 
-    # Elm protocol
+    # Event handling
 
     def handle(msg)
       case msg

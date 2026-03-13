@@ -127,7 +127,7 @@ Chamomile::Color::RED               # ANSI16
 
 ## Components
 
-Reusable TUI components with Elm-style `handle(msg)` / `view` API:
+Reusable TUI components with a `handle(msg)` / `view` API:
 
 ```ruby
 # Text input
