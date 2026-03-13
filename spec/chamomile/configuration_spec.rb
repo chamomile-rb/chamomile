@@ -32,6 +32,7 @@ RSpec.describe Chamomile::Configuration do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def view = ""
         def start = quit
       end.new
@@ -59,6 +60,7 @@ RSpec.describe Chamomile::Configuration do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def view = ""
         def start = quit
       end.new
@@ -80,6 +82,7 @@ RSpec.describe Chamomile::Configuration do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def view = ""
         def start = quit
       end.new

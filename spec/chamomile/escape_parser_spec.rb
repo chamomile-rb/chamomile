@@ -527,7 +527,7 @@ RSpec.describe Chamomile::EscapeParser do
 
       msgs = parse(input)
       # First message should be the flushed PasteMsg
-      paste_msgs = msgs.select { |m| m.is_a?(Chamomile::PasteMsg) }
+      paste_msgs = msgs.grep(Chamomile::PasteMsg)
       expect(paste_msgs.length).to be >= 1
       expect(paste_msgs[0].content.length).to be > 0
     end

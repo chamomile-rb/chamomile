@@ -75,11 +75,9 @@ RSpec.describe Chamomile::FilePicker do
     it "returns entries sorted dirs first then alphabetically" do
       fp = described_class.new(directory: Dir.pwd)
       msg = fp.init_cmd.call
-      dirs = msg.entries.select { |e| e[:directory] }
-      files = msg.entries.reject { |e| e[:directory] }
+      dirs, files = msg.entries.partition { |e| e[:directory] }
       # Dirs come before files
-      dir_indices = msg.entries.each_index.select { |i| msg.entries[i][:directory] }
-      file_indices = msg.entries.each_index.reject { |i| msg.entries[i][:directory] }
+      dir_indices, file_indices = msg.entries.each_index.partition { |i| msg.entries[i][:directory] }
       expect(dir_indices.max).to be < file_indices.min unless dir_indices.empty? || file_indices.empty?
       # Each group is sorted
       expect(dirs.map { |d| d[:name].downcase }).to eq(dirs.map { |d| d[:name].downcase }.sort)

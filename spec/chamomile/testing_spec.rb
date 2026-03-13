@@ -85,6 +85,7 @@ RSpec.describe Chamomile::Testing::Harness do
       received = nil
       model = Class.new do
         include Chamomile::Model
+
         define_method(:received=) { |v| received = v }
 
         def update(msg)
@@ -106,6 +107,7 @@ RSpec.describe Chamomile::Testing::Harness do
       received = nil
       model = Class.new do
         include Chamomile::Model
+
         define_method(:received=) { |v| received = v }
 
         def update(msg)
@@ -139,7 +141,7 @@ RSpec.describe Chamomile::Testing::Harness do
       model = counter_class.new
       harness = described_class.new(model)
       harness.resize(120, 40)
-      window_msgs = harness.messages.select { |m| m.is_a?(Chamomile::WindowSizeMsg) }
+      window_msgs = harness.messages.grep(Chamomile::WindowSizeMsg)
       expect(window_msgs.last.width).to eq(120)
       expect(window_msgs.last.height).to eq(40)
     end
@@ -270,7 +272,7 @@ RSpec.describe Chamomile::Testing::Harness do
       harness = described_class.new(model)
       harness.send_key("a")
       harness.send_key("b")
-      key_msgs = harness.messages.select { |m| m.is_a?(Chamomile::KeyMsg) }
+      key_msgs = harness.messages.grep(Chamomile::KeyMsg)
       expect(key_msgs.length).to eq(2)
     end
   end
@@ -300,6 +302,7 @@ RSpec.describe Chamomile::Testing::Harness do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         define_method(:received) { received }
 
         def update(msg)
@@ -313,7 +316,7 @@ RSpec.describe Chamomile::Testing::Harness do
       harness = described_class.new(model)
       harness.send_key("a")
       # WindowTitleCmd should NOT appear in received
-      expect(received.none? { |m| m.is_a?(Chamomile::WindowTitleCmd) }).to be true
+      expect(received.none?(Chamomile::WindowTitleCmd)).to be true
     end
 
     it "intercepts CursorVisibilityCmd without delivering to model" do
@@ -321,6 +324,7 @@ RSpec.describe Chamomile::Testing::Harness do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         define_method(:received) { received }
 
         def update(msg)
@@ -333,7 +337,7 @@ RSpec.describe Chamomile::Testing::Harness do
 
       harness = described_class.new(model)
       harness.send_key("a")
-      expect(received.none? { |m| m.is_a?(Chamomile::CursorVisibilityCmd) }).to be true
+      expect(received.none?(Chamomile::CursorVisibilityCmd)).to be true
     end
 
     it "raises ErrorMsg errors" do

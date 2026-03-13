@@ -30,6 +30,7 @@ RSpec.describe "Chamomile::Model immutability" do
     it "freezes the model after initialize" do
       klass = Class.new do
         include Chamomile::Model
+
         frozen_model!
 
         attr_reader :count
@@ -49,6 +50,7 @@ RSpec.describe "Chamomile::Model immutability" do
     it "raises FrozenError on mutation" do
       klass = Class.new do
         include Chamomile::Model
+
         frozen_model!
 
         attr_reader :count
@@ -72,6 +74,7 @@ RSpec.describe "Chamomile::Model immutability" do
     it "works with #with to return modified copies" do
       klass = Class.new do
         include Chamomile::Model
+
         frozen_model!
 
         attr_reader :count
@@ -94,6 +97,7 @@ RSpec.describe "Chamomile::Model immutability" do
     it "reports frozen_model? correctly" do
       frozen_class = Class.new do
         include Chamomile::Model
+
         frozen_model!
 
         def update(_msg) = nil

@@ -137,6 +137,7 @@ RSpec.describe "ViewDSL" do
     it "block inside vertical can access instance variables" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize
           @name = "Claude"
         end
@@ -160,6 +161,7 @@ RSpec.describe "ViewDSL" do
     it "no state leak between views" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize = @count = 0
 
         def view
@@ -187,6 +189,7 @@ RSpec.describe "ViewDSL" do
     it "view returning a Layout object works with renderer" do
       klass = Class.new do
         include Chamomile::Application
+
         def view
           vertical(align: :left) do
             text "DSL view"

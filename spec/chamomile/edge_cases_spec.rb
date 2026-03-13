@@ -7,6 +7,7 @@ RSpec.describe "edge cases" do
     it "quit works when it is the last expression" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize = @cleaned = false
         on_key("q") do
           @cleaned = true
@@ -24,6 +25,7 @@ RSpec.describe "edge cases" do
     it "non-callable return values are ignored (no crash)" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize = @count = 0
         on_key("a") { @count += 1 } # returns Integer, not a command
         def view = @count.to_s
@@ -37,6 +39,7 @@ RSpec.describe "edge cases" do
     it "tick command works when returned from handler" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize = @ticks = 0
         on_key("t") { tick(0.001) }
         on_tick { @ticks += 1 }
@@ -54,6 +57,7 @@ RSpec.describe "edge cases" do
     it "returns nil (no crash)" do
       klass = Class.new do
         include Chamomile::Application
+
         def view = "empty"
       end
 
@@ -67,6 +71,7 @@ RSpec.describe "edge cases" do
     it "exceptions in handlers propagate to caller" do
       klass = Class.new do
         include Chamomile::Application
+
         on_key("x") { raise "boom" }
         def view = ""
       end
@@ -80,6 +85,7 @@ RSpec.describe "edge cases" do
     it "works when on_start is private" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize = @started = false
         on_tick { @started = true }
         def view = @started ? "started" : "waiting"
@@ -114,6 +120,7 @@ RSpec.describe "edge cases" do
     it "last registration wins" do
       klass = Class.new do
         include Chamomile::Application
+
         def initialize = @value = "none"
         on_key("a") { @value = "first" }
         on_key("a") { @value = "second" }

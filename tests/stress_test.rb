@@ -172,7 +172,7 @@ class StressTest
   end
 
   def format_key(msg)
-    mods = msg.mod.map(&:to_s).join("+")
+    mods = msg.mod.join("+")
     key_str = msg.key.is_a?(Symbol) ? msg.key.to_s : msg.key.inspect
     mods.empty? ? key_str : "#{mods}+#{key_str}"
   end

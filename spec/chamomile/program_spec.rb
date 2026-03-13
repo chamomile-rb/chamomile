@@ -157,6 +157,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         define_method(:received) { received }
 
         def start
@@ -182,7 +183,7 @@ RSpec.describe Chamomile::Program do
       stub_terminal(program)
       program.run
 
-      expect(received.any? { |m| m.is_a?(Chamomile::WindowSizeMsg) }).to be false
+      expect(received.any?(Chamomile::WindowSizeMsg)).to be false
     end
   end
 
@@ -435,6 +436,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def start = quit
         def update(_msg) = nil
         def view = ""
@@ -460,6 +462,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def start = quit
         def update(_msg) = nil
         def view = ""
@@ -476,6 +479,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def start = quit
         def update(_msg) = nil
         def view = "test"
@@ -497,6 +501,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         define_method(:received) { received }
 
         def update(msg)
@@ -521,7 +526,7 @@ RSpec.describe Chamomile::Program do
 
       program.run
       # WindowTitleCmd should NOT have been delivered to model
-      expect(received.none? { |m| m.is_a?(Chamomile::WindowTitleCmd) }).to be true
+      expect(received.none?(Chamomile::WindowTitleCmd)).to be true
     end
   end
 
@@ -560,6 +565,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -582,6 +588,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def update(_msg) = nil
         def view = "test"
       end.new
@@ -604,6 +611,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def start = quit
         def update(_msg) = nil
         def view = "test"
@@ -632,6 +640,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def start = quit
         def update(_msg) = nil
         def view = "test"
@@ -680,6 +689,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def update(_msg) = nil
         def view = ""
       end.new
@@ -702,6 +712,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def update(_msg) = nil
         def view = ""
       end.new
@@ -725,6 +736,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         define_method(:sizes_received) { sizes_received }
 
         def update(msg)
@@ -756,6 +768,7 @@ RSpec.describe Chamomile::Program do
       model = Class.new do
         include Chamomile::Model
         include Chamomile::Commands
+
         def update(_msg) = nil
         def view = ""
       end.new
