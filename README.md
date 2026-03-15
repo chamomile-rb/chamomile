@@ -288,6 +288,10 @@ bundle exec rspec        # run tests (~1700+ specs)
 bundle exec rubocop      # lint
 ```
 
+## Support
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/omgjack)
+
 ## License
 
 [MIT](LICENSE)
